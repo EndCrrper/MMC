@@ -27,7 +27,7 @@ toc;
 [T_sim, ~, ~] = solve_heat(F_exp, v_exp, xm_opt);
 idx0 = find(T_sim >= 30, 1);
 T_sim_s = T_sim(idx0:end);
-t_sim = (0:length(T_sim_s)-1)*0.5;
+t_sim = ((idx0-1) + (0:length(T_sim_s)-1)) * 0.5;
 T_interp = interp1(t_sim, T_sim_s, t_exp, 'linear');
 err = T_interp - T_exp;
 R2 = 1 - sum(err.^2)/sum((T_exp-mean(T_exp)).^2);
@@ -66,7 +66,7 @@ function sse = obj_fit(xm, F_exp, v_exp, t_exp, T_exp)
     idx0 = find(T_sim >= 30, 1);
     if isempty(idx0), sse = Inf; return; end
     T_s = T_sim(idx0:end);
-    t_s = (0:length(T_s)-1)*0.5;
+    t_s = ((idx0-1) + (0:length(T_s)-1)) * 0.5;  % 传感器启动时刻对齐
     T_int = interp1(t_s, T_s, t_exp, 'linear');
     if any(isnan(T_int)), sse = Inf; else, sse = sum((T_int-T_exp).^2); end
 end
