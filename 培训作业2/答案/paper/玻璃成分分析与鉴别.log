@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.5.21)  28 JUL 2026 17:01
+This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.5.21)  28 JUL 2026 17:21
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1114,21 +1114,21 @@ File: ../result/figures/p1_chi2_results_300.png Graphic file (type bmp)
  [8]
 File: ../result/figures/p1_four_groups_boxplot_300.png Graphic file (type bmp)
 <../result/figures/p1_four_groups_boxplot_300.png>
- [9] [10]
+ [9] [10] [11]
 File: ../result/figures/p2_feature_importance_300.png Graphic file (type bmp)
 <../result/figures/p2_feature_importance_300.png>
- [11] [12] [13]
+ [12] [13]
 File: ../result/figures/p3_prediction_confidence_300.png Graphic file (type bmp
 )
 <../result/figures/p3_prediction_confidence_300.png>
- [14] [15]
+ [14] [15] [16]
 File: ../result/figures/p4_correlation_heatmap_300.png Graphic file (type bmp)
 <../result/figures/p4_correlation_heatmap_300.png>
- [16]
+ [17]
 File: ../result/figures/p4_correlation_scatter_300.png Graphic file (type bmp)
 <../result/figures/p4_correlation_scatter_300.png>
- [17] [18] [19] [20] [21]
-[22]
+ [18] [19] [20] [21]
+[22] [23] [24]
 
 Package fontspec Info: 
 (fontspec)             Could not resolve font "FangSong/BI" (it probably
@@ -1155,7 +1155,7 @@ Package fontspec Info:
 (fontspec)             - 'normal' (m/n) with NFSS spec.:
 (fontspec)             <->"FangSong/OT:script=hani;language=dflt;"
 
- [23] [24] (./玻璃成分分析与鉴别.aux)
+ [25] [26] (./玻璃成分分析与鉴别.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2022/08/05>
@@ -1164,12 +1164,12 @@ Package rerunfilecheck Info: File `玻璃成分分析与鉴别.out' has not chan
 (rerunfilecheck)             Checksum: CC6F5829B8AA5CE4A90769932B419DF0;4101.
  ) 
 Here is how much of TeX's memory you used:
- 20710 strings out of 468168
- 431993 string characters out of 5436524
+ 20722 strings out of 468168
+ 432757 string characters out of 5436524
  1287211 words of memory out of 5000000
- 49138 multiletter control sequences out of 15000+600000
+ 49150 multiletter control sequences out of 15000+600000
  641623 words of font info for 130 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  93i,16n,111p,1203b,1838s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on 玻璃成分分析与鉴别.pdf (24 pages).
+Output written on 玻璃成分分析与鉴别.pdf (26 pages).

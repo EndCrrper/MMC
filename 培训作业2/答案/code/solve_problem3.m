@@ -20,13 +20,14 @@ fig_dir = fullfile(result_dir, 'figures');
 load(fullfile(result_dir, 'preprocessed_data.mat'), ...
     'T3_proc', 'X3_clr', 'X3_norm', 'comp_names');
 load(fullfile(result_dir, 'decision_tree_models.mat'), ...
-    'tree_unweathered', 'tree_weathered');
+    'tree_unweathered', 'tree_weathered', 'tree_all');
 
 fprintf('预处理数据和决策树模型已加载\n');
 
 if ~exist('tree_unweathered', 'var') || ~exist('tree_weathered', 'var')
     error('请先运行 solve_problem2.m 训练决策树模型');
 end
+has_tree_all = exist('tree_all', 'var') && ~isempty(tree_all);
 
 %% ========== 3.1 类型鉴别 ==========
 fprintf('\n========== 3.1 未知样本分类预测 ==========\n');
@@ -47,7 +48,7 @@ predictions = cell(length(sample_ids), 1);
 pred_probs = zeros(length(sample_ids), 2);  % [高钾概率, 铅钡概率]
 
 for i = 1:length(sample_ids)
-    xi = X3_clr(i, :);
+    xi = X3_norm(i, :);  % 使用归一化数据（与训练数据一致）
 
     if weat_status(i) == 0
         [pred_label, prob] = predict(tree_unweathered, xi);
@@ -104,8 +105,8 @@ for p_idx = 1:length(perturbation_levels)
     change_matrix = zeros(n_samples, n_trials);
 
     for trial = 1:n_trials
-        noise = delta * randn(size(X3_clr));
-        X3_pert = X3_clr + noise;
+        noise = delta * randn(size(X3_norm));
+        X3_pert = X3_norm + noise;
 
         for i = 1:n_samples
             if weat_status(i) == 0

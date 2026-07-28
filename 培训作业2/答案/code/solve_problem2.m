@@ -44,7 +44,7 @@ for weat_state = 0:1
 
     % 筛选对应风化状态的样本
     idx = T2_proc.WEAT_num == weat_state;
-    X = X2_clr(idx, :);
+    X = X2_norm(idx, :);  % 使用归一化数据（保留成分绝对丰度信号）
     y = T2_proc.TYPE_num(idx);
 
     if length(unique(y)) < 2
@@ -81,16 +81,27 @@ for weat_state = 0:1
     accuracy = sum(y_pred == y_test) / length(y_test);
     cm = confusionmat(y_test, y_pred);
 
-    % 精确率、召回率、F1
+    % 精确率、召回率、F1（使用标准定义：TP/(TP+FP), TP/(TP+FN)）
     if size(cm, 1) == 2
-        precision = diag(cm)' ./ sum(cm, 1);
-        recall = diag(cm)' ./ sum(cm, 2);
-        f1 = 2 * precision .* recall ./ (precision + recall);
+        n_classes = size(cm, 1);
+        precision = zeros(1, n_classes);
+        recall = zeros(1, n_classes);
+        f1 = zeros(1, n_classes);
+        for c = 1:n_classes
+            tp = cm(c, c);
+            fp = sum(cm(:, c)) - tp;
+            fn = sum(cm(c, :)) - tp;
+            precision(c) = tp / max(tp + fp, 1);
+            recall(c) = tp / max(tp + fn, 1);
+            f1(c) = 2 * precision(c) * recall(c) / max(precision(c) + recall(c), eps);
+        end
         fprintf('准确率: %.2f%%\n', accuracy * 100);
         fprintf('高钾: 精确率=%.2f%%, 召回率=%.2f%%, F1=%.4f\n', ...
             precision(1)*100, recall(1)*100, f1(1));
-        fprintf('铅钡: 精确率=%.2f%%, 召回率=%.2f%%, F1=%.4f\n', ...
-            precision(2)*100, recall(2)*100, f1(2));
+        if n_classes >= 2
+            fprintf('铅钡: 精确率=%.2f%%, 召回率=%.2f%%, F1=%.4f\n', ...
+                precision(2)*100, recall(2)*100, f1(2));
+        end
     else
         fprintf('准确率: %.2f%%\n', accuracy * 100);
     end
@@ -118,7 +129,10 @@ for weat_state = 0:1
 end
 
 % 用全部数据重新训练最终分类器（用于问题3预测）
+% 注意：归一化数据保留成分绝对丰度，克服CLR对稀疏成分的扭曲
 fprintf('\n--- 重新训练全数据分类器（用于问题3）---\n');
+
+% 风化状态已知时使用分组模型，否则用全数据模型
 for weat_state = 0:1
     if weat_state == 0
         state_name = '未风化';
@@ -127,7 +141,7 @@ for weat_state = 0:1
     end
     idx_all = T2_proc.WEAT_num == weat_state;
     if sum(idx_all) >= 3 && length(unique(T2_proc.TYPE_num(idx_all))) >= 2
-        X_all = X2_clr(idx_all, :);
+        X_all = X2_norm(idx_all, :);
         y_all = T2_proc.TYPE_num(idx_all);
         tree_full = fitctree(X_all, y_all, ...
             'PredictorNames', comp_labels, ...
@@ -146,9 +160,21 @@ for weat_state = 0:1
     end
 end
 
-% 保存决策树模型（使用全数据训练的版本）
+% 同时训练不分组的全数据模型（作为备选，适用于化学特征跨风化的样本）
+tree_all = fitctree(X2_norm, T2_proc.TYPE_num, ...
+    'PredictorNames', comp_labels, ...
+    'OptimizeHyperparameters', 'auto', ...
+    'HyperparameterOptimizationOptions', ...
+    struct('AcquisitionFunctionName', 'expected-improvement-plus', ...
+           'MaxObjectiveEvaluations', 30, ...
+           'ShowPlots', false, ...
+           'Verbose', 0));
+fprintf('  全数据(不分风化)决策树训练完成 (n=%d)\n', size(X2_norm, 1));
+
+% 保存决策树模型
 save(fullfile(result_dir, 'decision_tree_models.mat'), ...
-    'tree_unweathered', 'tree_weathered', 'acc_unweathered', 'acc_weathered');
+    'tree_unweathered', 'tree_weathered', 'tree_all', ...
+    'acc_unweathered', 'acc_weathered');
 
 %% ========== 2.2 亚类划分：层次聚类 ==========
 fprintf('\n========== 2.2 亚类划分（层次聚类）==========\n');
@@ -237,7 +263,7 @@ for weat_state = 0:1
     idx = T2_proc.WEAT_num == weat_state;
     if sum(idx) == 0, continue; end
 
-    X_orig = X2_clr(idx, :);
+    X_orig = X2_norm(idx, :);  % 使用归一化数据
     y_orig = T2_proc.TYPE_num(idx);
 
     % 加入随机扰动
@@ -385,7 +411,7 @@ for weat_state = 0:1
     end
     idx = T2_proc.WEAT_num == weat_state;
     if sum(idx) < 5, continue; end
-    X_cv = X2_clr(idx, :);
+    X_cv = X2_norm(idx, :);  % 使用归一化数据
     y_cv = T2_proc.TYPE_num(idx);
 
     cv_model = fitctree(X_cv, y_cv, 'KFold', 5);
