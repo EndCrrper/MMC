@@ -215,9 +215,16 @@ print(gcf, fullfile(fig_dir, 'p1_chi2_results_300.png'), '-dpng', '-r300');
 close(gcf);
 
 % 图1.2：四组统计规律箱线图（CLR空间）
-figure('Position', [100, 100, 1800, 700]);
+figure('Position', [100, 100, 1800, 900]);
+% 手动调小4个子图，为顶部总标题留出充足空间
+% [left, bottom, width, height] — 4个子图的归一化位置
+subplot_positions = { ...
+    [0.05, 0.12, 0.21, 0.72]; ...  % 子图1：高钾-无风化
+    [0.27, 0.12, 0.21, 0.72]; ...  % 子图2：高钾-风化
+    [0.49, 0.12, 0.21, 0.72]; ...  % 子图3：铅钡-无风化
+    [0.71, 0.12, 0.21, 0.72]};     % 子图4：铅钡-风化
 for g = 1:4
-    subplot(1, 4, g);
+    subplot('Position', subplot_positions{g});
     idx = groups{g, 2};
     if sum(idx) > 0
         boxplot(X2_clr(idx, :), 'Labels', comp_names);
@@ -227,7 +234,12 @@ for g = 1:4
         grid on;
     end
 end
-sgtitle('问题1.2：四组玻璃化学成分CLR分布', 'FontSize', 14, 'FontWeight', 'bold');
+annotation('textbox', [0.1, 0.90, 0.8, 0.06], ...
+    'String', '问题1.2：四组玻璃化学成分CLR分布', ...
+    'FontSize', 14, 'FontWeight', 'bold', ...
+    'HorizontalAlignment', 'center', ...
+    'VerticalAlignment', 'top', ...
+    'EdgeColor', 'none');
 saveas(gcf, fullfile(fig_dir, 'p1_four_groups_boxplot.png'));
 print(gcf, fullfile(fig_dir, 'p1_four_groups_boxplot_300.png'), '-dpng', '-r300');
 close(gcf);
