@@ -22,78 +22,97 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.2}问题2分析：玻璃类型的分类与亚类划分}{6}{subsection.4.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.3}问题3分析：未知样本类属鉴别}{6}{subsection.4.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.4}问题4分析：成分间关联关系与差异}{6}{subsection.4.4}\protected@file@percent }
+\citation{2}
+\@writefile{toc}{\contentsline {section}{\numberline {5}数据处理}{7}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}数据来源与结构}{7}{subsection.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}表单1：文物属性编码}{7}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.1}类别变量数值化}{7}{subsubsection.5.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.2}缺失值处理}{7}{subsubsection.5.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}表单2：成分数据清洗与变换}{7}{subsection.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.1}零值处理}{7}{subsubsection.5.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.2}异常成分检测}{7}{subsubsection.5.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.3}归一化与CLR变换}{8}{subsubsection.5.3.3}\protected@file@percent }
+\newlabel{eq:normalize}{{1}{8}{归一化与CLR变换}{equation.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.4}缺失值填补}{8}{subsubsection.5.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.5}表单1-2关联匹配}{8}{subsubsection.5.3.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}表单3：未知样本预处理}{8}{subsection.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}预处理结果汇总}{8}{subsection.5.5}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces 预处理后数据集汇总}}{9}{table.caption.3}\protected@file@percent }
+\newlabel{tab:preprocess}{{2}{9}{预处理后数据集汇总}{table.caption.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces 预处理后关键成分分布对比（归一化含量\%）}}{9}{figure.caption.4}\protected@file@percent }
+\newlabel{fig:preprocess}{{1}{9}{预处理后关键成分分布对比（归一化含量\%）}{figure.caption.4}{}}
 \citation{5}
 \citation{2}
-\@writefile{toc}{\contentsline {section}{\numberline {5}模型建立与求解}{7}{section.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}问题1：风化关联分析与成分统计规律}{7}{subsection.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.1}模型建立}{7}{subsubsection.5.1.1}\protected@file@percent }
-\newlabel{eq:expected}{{1}{7}{模型建立}{equation.1}{}}
-\newlabel{eq:clr}{{2}{7}{模型建立}{equation.2}{}}
-\newlabel{eq:pred}{{3}{7}{模型建立}{equation.3}{}}
-\newlabel{eq:inverse_clr}{{4}{7}{模型建立}{equation.4}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.2}模型求解与结果}{7}{subsubsection.5.1.2}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces 风化与各因素的关联性检验结果}}{8}{table.caption.3}\protected@file@percent }
-\newlabel{tab:chi2}{{2}{8}{风化与各因素的关联性检验结果}{table.caption.3}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces 风化关联性检验$p$值柱状图（红色虚线为$\alpha =0.05$显著性水平）}}{8}{figure.caption.4}\protected@file@percent }
-\newlabel{fig:p1_chi2}{{1}{8}{风化关联性检验$p$值柱状图（红色虚线为$\alpha =0.05$显著性水平）}{figure.caption.4}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces 四组主要化学成分的CLR均值与变异系数（CV\%）}}{9}{table.caption.5}\protected@file@percent }
-\newlabel{tab:stat}{{3}{9}{四组主要化学成分的CLR均值与变异系数（CV\%）}{table.caption.5}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces 四组玻璃14种化学成分的CLR分布箱线图}}{9}{figure.caption.6}\protected@file@percent }
-\newlabel{fig:p1_boxplot}{{2}{9}{四组玻璃14种化学成分的CLR分布箱线图}{figure.caption.6}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.3}模型检验}{9}{subsubsection.5.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}模型建立与求解}{10}{section.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}问题1：风化关联分析与成分统计规律}{10}{subsection.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.1.1}模型建立}{10}{subsubsection.6.1.1}\protected@file@percent }
+\newlabel{eq:expected}{{2}{10}{模型建立}{equation.2}{}}
+\newlabel{eq:clr}{{3}{10}{模型建立}{equation.3}{}}
+\newlabel{eq:pred}{{4}{10}{模型建立}{equation.4}{}}
+\newlabel{eq:inverse_clr}{{5}{10}{模型建立}{equation.5}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.1.2}模型求解与结果}{10}{subsubsection.6.1.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces 风化与各因素的关联性检验结果}}{11}{table.caption.5}\protected@file@percent }
+\newlabel{tab:chi2}{{3}{11}{风化与各因素的关联性检验结果}{table.caption.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces 风化关联性检验$p$值柱状图（红色虚线为$\alpha =0.05$显著性水平）}}{11}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:p1_chi2}{{2}{11}{风化关联性检验$p$值柱状图（红色虚线为$\alpha =0.05$显著性水平）}{figure.caption.6}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces 四组主要化学成分的CLR均值与变异系数（CV\%）}}{12}{table.caption.7}\protected@file@percent }
+\newlabel{tab:stat}{{4}{12}{四组主要化学成分的CLR均值与变异系数（CV\%）}{table.caption.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces 四组玻璃14种化学成分的CLR分布箱线图}}{12}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:p1_boxplot}{{3}{12}{四组玻璃14种化学成分的CLR分布箱线图}{figure.caption.8}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.1.3}模型检验}{13}{subsubsection.6.1.3}\protected@file@percent }
 \citation{6}
 \citation{7}
 \citation{8}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}问题2：玻璃类型分类与亚类划分}{11}{subsection.5.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.1}模型建立}{11}{subsubsection.5.2.1}\protected@file@percent }
-\newlabel{eq:gini}{{5}{11}{模型建立}{equation.5}{}}
-\newlabel{eq:gini_split}{{6}{11}{模型建立}{equation.6}{}}
-\newlabel{eq:corr_dist}{{7}{11}{模型建立}{equation.7}{}}
-\newlabel{eq:perturb}{{8}{11}{模型建立}{equation.8}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.2}模型求解与结果}{11}{subsubsection.5.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}问题2：玻璃类型分类与亚类划分}{14}{subsection.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.2.1}模型建立}{14}{subsubsection.6.2.1}\protected@file@percent }
+\newlabel{eq:gini}{{6}{14}{模型建立}{equation.6}{}}
+\newlabel{eq:gini_split}{{7}{14}{模型建立}{equation.7}{}}
+\newlabel{eq:corr_dist}{{8}{14}{模型建立}{equation.8}{}}
+\newlabel{eq:perturb}{{9}{14}{模型建立}{equation.9}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.2.2}模型求解与结果}{14}{subsubsection.6.2.2}\protected@file@percent }
 \citation{3}
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces 决策树分类结果（测试集）}}{12}{table.caption.7}\protected@file@percent }
-\newlabel{tab:dt_results}{{4}{12}{决策树分类结果（测试集）}{table.caption.7}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces 决策树特征重要性排名（左：未风化样本，右：风化样本）}}{12}{figure.caption.8}\protected@file@percent }
-\newlabel{fig:p2_importance}{{3}{12}{决策树特征重要性排名（左：未风化样本，右：风化样本）}{figure.caption.8}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces 四组层次聚类结果}}{12}{table.caption.9}\protected@file@percent }
-\newlabel{tab:cluster}{{5}{12}{四组层次聚类结果}{table.caption.9}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.3}模型检验}{13}{subsubsection.5.2.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}问题3：未知样本类属鉴别}{14}{subsection.5.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.1}模型建立}{14}{subsubsection.5.3.1}\protected@file@percent }
-\newlabel{eq:pred_tree}{{9}{14}{模型建立}{equation.9}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.2}模型求解与结果}{14}{subsubsection.5.3.2}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces 表单3未知样本分类预测结果}}{14}{table.caption.10}\protected@file@percent }
-\newlabel{tab:unknown}{{6}{14}{表单3未知样本分类预测结果}{table.caption.10}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces 未知样本预测置信度（左）与主要成分含量对比（右）}}{15}{figure.caption.11}\protected@file@percent }
-\newlabel{fig:p3_confidence}{{4}{15}{未知样本预测置信度（左）与主要成分含量对比（右）}{figure.caption.11}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces 不同扰动水平下预测变化情况（20次重复）}}{15}{table.caption.12}\protected@file@percent }
-\newlabel{tab:sens}{{7}{15}{不同扰动水平下预测变化情况（20次重复）}{table.caption.12}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.3}模型检验}{15}{subsubsection.5.3.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces 决策树分类结果（测试集）}}{15}{table.caption.9}\protected@file@percent }
+\newlabel{tab:dt_results}{{5}{15}{决策树分类结果（测试集）}{table.caption.9}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces 决策树特征重要性排名（左：未风化样本，右：风化样本）}}{15}{figure.caption.10}\protected@file@percent }
+\newlabel{fig:p2_importance}{{4}{15}{决策树特征重要性排名（左：未风化样本，右：风化样本）}{figure.caption.10}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces 四组层次聚类结果}}{15}{table.caption.11}\protected@file@percent }
+\newlabel{tab:cluster}{{6}{15}{四组层次聚类结果}{table.caption.11}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.2.3}模型检验}{16}{subsubsection.6.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}问题3：未知样本类属鉴别}{17}{subsection.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.3.1}模型建立}{17}{subsubsection.6.3.1}\protected@file@percent }
+\newlabel{eq:pred_tree}{{10}{17}{模型建立}{equation.10}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.3.2}模型求解与结果}{17}{subsubsection.6.3.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces 表单3未知样本分类预测结果}}{17}{table.caption.12}\protected@file@percent }
+\newlabel{tab:unknown}{{7}{17}{表单3未知样本分类预测结果}{table.caption.12}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces 未知样本预测置信度（左）与主要成分含量对比（右）}}{18}{figure.caption.13}\protected@file@percent }
+\newlabel{fig:p3_confidence}{{5}{18}{未知样本预测置信度（左）与主要成分含量对比（右）}{figure.caption.13}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces 不同扰动水平下预测变化情况（20次重复）}}{18}{table.caption.14}\protected@file@percent }
+\newlabel{tab:sens}{{8}{18}{不同扰动水平下预测变化情况（20次重复）}{table.caption.14}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.3.3}模型检验}{18}{subsubsection.6.3.3}\protected@file@percent }
 \citation{4}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}问题4：成分关联分析与差异性比较}{17}{subsection.5.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.4.1}模型建立}{17}{subsubsection.5.4.1}\protected@file@percent }
-\newlabel{eq:pearson}{{10}{17}{模型建立}{equation.10}{}}
-\newlabel{eq:gra}{{11}{17}{模型建立}{equation.11}{}}
-\newlabel{eq:wilcoxon}{{12}{17}{模型建立}{equation.12}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.4.2}模型求解与结果}{17}{subsubsection.5.4.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces 全部样本、高钾玻璃和铅钡玻璃的Pearson相关系数热图}}{17}{figure.caption.13}\protected@file@percent }
-\newlabel{fig:p4_heatmap}{{5}{17}{全部样本、高钾玻璃和铅钡玻璃的Pearson相关系数热图}{figure.caption.13}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces 高钾与铅钡玻璃逐成分对相关系数散点图（红色虚线为$y=x$参考线）}}{18}{figure.caption.14}\protected@file@percent }
-\newlabel{fig:p4_scatter}{{6}{18}{高钾与铅钡玻璃逐成分对相关系数散点图（红色虚线为$y=x$参考线）}{figure.caption.14}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.4.3}模型检验}{18}{subsubsection.5.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}问题4：成分关联分析与差异性比较}{20}{subsection.6.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.4.1}模型建立}{20}{subsubsection.6.4.1}\protected@file@percent }
+\newlabel{eq:pearson}{{11}{20}{模型建立}{equation.11}{}}
+\newlabel{eq:gra}{{12}{20}{模型建立}{equation.12}{}}
+\newlabel{eq:wilcoxon}{{13}{20}{模型建立}{equation.13}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.4.2}模型求解与结果}{20}{subsubsection.6.4.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces 全部样本、高钾玻璃和铅钡玻璃的Pearson相关系数热图}}{20}{figure.caption.15}\protected@file@percent }
+\newlabel{fig:p4_heatmap}{{6}{20}{全部样本、高钾玻璃和铅钡玻璃的Pearson相关系数热图}{figure.caption.15}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces 高钾与铅钡玻璃逐成分对相关系数散点图（红色虚线为$y=x$参考线）}}{21}{figure.caption.16}\protected@file@percent }
+\newlabel{fig:p4_scatter}{{7}{21}{高钾与铅钡玻璃逐成分对相关系数散点图（红色虚线为$y=x$参考线）}{figure.caption.16}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.4.3}模型检验}{21}{subsubsection.6.4.3}\protected@file@percent }
 \citation{3}
 \citation{3}
 \citation{1}
 \citation{9}
-\@writefile{toc}{\contentsline {section}{\numberline {6}结果分析与讨论}{19}{section.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}基础数值分析}{19}{subsection.6.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}深层机理分析}{19}{subsection.6.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}应用延伸分析}{20}{subsection.6.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {7}模型评价与改进}{21}{section.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}优点}{21}{subsection.7.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}缺点与改进方向}{21}{subsection.7.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {8}结论}{23}{section.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}结果分析与讨论}{22}{section.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}基础数值分析}{22}{subsection.7.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}深层机理分析}{22}{subsection.7.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}应用延伸分析}{23}{subsection.7.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {8}模型评价与改进}{24}{section.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.1}优点}{24}{subsection.8.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.2}缺点与改进方向}{24}{subsection.8.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {9}结论}{26}{section.9}\protected@file@percent }
 \bibcite{1}{1}
 \bibcite{2}{2}
 \bibcite{3}{3}
@@ -103,4 +122,4 @@
 \bibcite{7}{7}
 \bibcite{8}{8}
 \bibcite{9}{9}
-\gdef \@abspage@last{26}
+\gdef \@abspage@last{29}

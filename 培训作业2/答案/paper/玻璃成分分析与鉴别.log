@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.5.21)  28 JUL 2026 18:10
+This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.5.21)  28 JUL 2026 18:36
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1021,9 +1021,12 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) [1
 
 ] [2] [3] [4]
-[5] [6]
+[5] [6] [7] [8]
+File: ../result/figures/preprocess_comparison_300.png Graphic file (type bmp)
+<../result/figures/preprocess_comparison_300.png>
+ [9]
 ! Undefined control sequence.
-l.228 CLR变换将闭锁的成分数据$\mathbf{x}_i\in\mathscr
+l.312 CLR变换将闭锁的成分数据$\mathbf{x}_i\in\mathscr
                                            {S}^D$映射到无约束的$\mathbb{R}^D$空间，打破了...
 The control sequence at the end of the top line
 of your error message was never \def'ed. If you have
@@ -1034,7 +1037,7 @@ and I'll forget about whatever was undefined.
 ! Extra alignment tab has been changed to \cr.
 <recently read> \endtemplate 
                              
-l.261 \end{tabularx}
+l.345 \end{tabularx}
                     
 You have given more \span or & marks than there were
 in the preamble to the \halign or \valign now in progress.
@@ -1043,7 +1046,7 @@ So I'll assume that you meant to type \cr instead.
 ! Extra alignment tab has been changed to \cr.
 <recently read> \endtemplate 
                              
-l.261 \end{tabularx}
+l.345 \end{tabularx}
                     
 You have given more \span or & marks than there were
 in the preamble to the \halign or \valign now in progress.
@@ -1052,7 +1055,7 @@ So I'll assume that you meant to type \cr instead.
 ! Extra alignment tab has been changed to \cr.
 <recently read> \endtemplate 
                              
-l.261 \end{tabularx}
+l.345 \end{tabularx}
                     
 You have given more \span or & marks than there were
 in the preamble to the \halign or \valign now in progress.
@@ -1061,7 +1064,7 @@ So I'll assume that you meant to type \cr instead.
 ! Extra alignment tab has been changed to \cr.
 <recently read> \endtemplate 
                              
-l.261 \end{tabularx}
+l.345 \end{tabularx}
                     
 You have given more \span or & marks than there were
 in the preamble to the \halign or \valign now in progress.
@@ -1070,7 +1073,7 @@ So I'll assume that you meant to type \cr instead.
 ! Extra alignment tab has been changed to \cr.
 <recently read> \endtemplate 
                              
-l.261 \end{tabularx}
+l.345 \end{tabularx}
                     
 You have given more \span or & marks than there were
 in the preamble to the \halign or \valign now in progress.
@@ -1079,7 +1082,7 @@ So I'll assume that you meant to type \cr instead.
 ! Extra alignment tab has been changed to \cr.
 <recently read> \endtemplate 
                              
-l.261 \end{tabularx}
+l.345 \end{tabularx}
                     
 You have given more \span or & marks than there were
 in the preamble to the \halign or \valign now in progress.
@@ -1088,7 +1091,7 @@ So I'll assume that you meant to type \cr instead.
 ! Extra alignment tab has been changed to \cr.
 <recently read> \endtemplate 
                              
-l.261 \end{tabularx}
+l.345 \end{tabularx}
                     
 You have given more \span or & marks than there were
 in the preamble to the \halign or \valign now in progress.
@@ -1097,38 +1100,38 @@ So I'll assume that you meant to type \cr instead.
 ! Extra alignment tab has been changed to \cr.
 <recently read> \endtemplate 
                              
-l.261 \end{tabularx}
+l.345 \end{tabularx}
                     
 You have given more \span or & marks than there were
 in the preamble to the \halign or \valign now in progress.
 So I'll assume that you meant to type \cr instead.
 
 
-Underfull \hbox (badness 10000) in alignment at lines 261--261
+Underfull \hbox (badness 10000) in alignment at lines 345--345
 [][][][][] 
  []
 
-[7]
+[10]
 File: ../result/figures/p1_chi2_results_300.png Graphic file (type bmp)
 <../result/figures/p1_chi2_results_300.png>
- [8]
+ [11]
 File: ../result/figures/p1_four_groups_boxplot_300.png Graphic file (type bmp)
 <../result/figures/p1_four_groups_boxplot_300.png>
- [9] [10] [11]
+ [12] [13] [14]
 File: ../result/figures/p2_feature_importance_300.png Graphic file (type bmp)
 <../result/figures/p2_feature_importance_300.png>
- [12] [13]
+ [15] [16]
 File: ../result/figures/p3_prediction_confidence_300.png Graphic file (type bmp
 )
 <../result/figures/p3_prediction_confidence_300.png>
- [14] [15] [16]
+ [17] [18] [19]
 File: ../result/figures/p4_correlation_heatmap_300.png Graphic file (type bmp)
 <../result/figures/p4_correlation_heatmap_300.png>
- [17]
+ [20]
 File: ../result/figures/p4_correlation_scatter_300.png Graphic file (type bmp)
 <../result/figures/p4_correlation_scatter_300.png>
- [18] [19] [20] [21]
-[22] [23] [24]
+ [21] [22] [23] [24]
+[25] [26] [27]
 
 Package fontspec Info: 
 (fontspec)             Could not resolve font "FangSong/BI" (it probably
@@ -1155,21 +1158,28 @@ Package fontspec Info:
 (fontspec)             - 'normal' (m/n) with NFSS spec.:
 (fontspec)             <->"FangSong/OT:script=hani;language=dflt;"
 
- [25] [26] (./玻璃成分分析与鉴别.aux)
+ [28] [29] (./玻璃成分分析与鉴别.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2022/08/05>
  ***********
-Package rerunfilecheck Info: File `玻璃成分分析与鉴别.out' has not changed.
-(rerunfilecheck)             Checksum: CC6F5829B8AA5CE4A90769932B419DF0;4101.
+
+
+Package rerunfilecheck Warning: File `玻璃成分分析与鉴别.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `玻璃成分分析与鉴别.out':
+(rerunfilecheck)             Before: 520B2D5D09D174103A4A260D88B13796;5668
+(rerunfilecheck)             After:  28DFD02167A875384D431B0EEDE6F33F;5660.
  ) 
 Here is how much of TeX's memory you used:
- 20722 strings out of 468168
- 432757 string characters out of 5436524
+ 20737 strings out of 468168
+ 433299 string characters out of 5436524
  1287211 words of memory out of 5000000
- 49150 multiletter control sequences out of 15000+600000
+ 49164 multiletter control sequences out of 15000+600000
  641623 words of font info for 130 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  93i,16n,111p,1203b,1838s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on 玻璃成分分析与鉴别.pdf (26 pages).
+Output written on 玻璃成分分析与鉴别.pdf (29 pages).
