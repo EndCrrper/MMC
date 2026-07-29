@@ -254,7 +254,7 @@ fprintf('表单3预处理完成: %d 个未知样本\n', height(T3_proc));
 fprintf('\n--- 五、生成预处理对比图 ---\n');
 
 % 图1：主要成分含量箱线图（高钾 vs 铅钡，选4种关键成分）
-figure('Position', [100, 100, 1600, 600]);
+figure('Position', [100, 100, 1600, 800]);
 high_k_idx = T2_proc.TYPE_num == 0;
 pb_idx = T2_proc.TYPE_num == 1;
 
@@ -262,8 +262,9 @@ pb_idx = T2_proc.TYPE_num == 1;
 key_comp_idx = [1, 3, 9, 10];  % SiO2, K2O, PbO, BaO
 key_comp_names = comp_names(key_comp_idx);
 
+t = tiledlayout(1, 4, 'TileSpacing', 'compact', 'Padding', 'compact');
 for p = 1:4
-    subplot(1, 4, p);
+    nexttile;
     j = key_comp_idx(p);
     boxplot([X2_norm(high_k_idx, j); X2_norm(pb_idx, j)], ...
         [repmat({'高钾'}, sum(high_k_idx), 1); repmat({'铅钡'}, sum(pb_idx), 1)]);
