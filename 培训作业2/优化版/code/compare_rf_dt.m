@@ -126,8 +126,13 @@ for weat_state = 0:1
         svm_loss = kfoldLoss(svm_cv);
         svm_acc = (1 - svm_loss) * 100;
         fprintf('  5折CV准确率: %.2f%%\n', svm_acc);
+        try
+            gamma_val = 1 / svm_mdl.KernelParameters.Scale^2;
+        catch
+            gamma_val = NaN;
+        end
         fprintf('  最优超参数: C=%.3f, Gamma=%.4f\n', ...
-            svm_mdl.BoxConstraints(1), 1/svm_mdl.KernelScale^2);
+            svm_mdl.BoxConstraints(1), gamma_val);
     catch ME
         fprintf('  SVM训练失败: %s\n', ME.message);
         svm_acc = NaN;
@@ -158,25 +163,34 @@ for weat_state = 0:1
 
     % ======== 汇总 ========
     fprintf('\n========== %s 汇总 ==========\n', state_name);
-    fprintf('%-20s %10s\n', '分类器', '5折CV准确率');
-    fprintf('%-20s %10s\n', '--------------------', '----------');
-    fprintf('%-20s %8.2f%%\n', '决策树 (DT)', dt_acc);
-    fprintf('%-20s %8.2f%%\n', sprintf('随机森林 (RF,n=%d)', best_nTrees), best_rf_acc);
-    fprintf('%-20s %8.2f%%\n', 'SVM (RBF核)', svm_acc);
-    fprintf('%-20s %8.2f%%\n', 'LDA', lda_acc);
+    fprintf('%-20s %10s %10s\n', '分类器', '5折CV准确率', '宏平均F1');
+    fprintf('%-20s %10s %10s\n', '--------------------', '----------', '----------');
+
+    % 计算各分类器的宏平均F1
+    dt_f1 = compute_cv_f1(dt_cv, X, y);
+    rf_f1 = compute_cv_f1_rf(X, y_num, best_nTrees);
+    if ~isnan(svm_acc)
+        svm_f1 = compute_cv_f1(svm_cv, X, y);
+    else
+        svm_f1 = NaN;
+    end
+    if ~isnan(lda_acc)
+        lda_f1 = compute_cv_f1(lda_cv, X, y);
+    else
+        lda_f1 = NaN;
+    end
+
+    fprintf('%-20s %8.2f%% %8.3f\n', '决策树 (DT)', dt_acc, dt_f1);
+    fprintf('%-20s %8.2f%% %8.3f\n', sprintf('随机森林 (RF,n=%d)', best_nTrees), best_rf_acc, rf_f1);
+    fprintf('%-20s %8.2f%% %8.3f\n', 'SVM (RBF核)', svm_acc, svm_f1);
+    fprintf('%-20s %8.2f%% %8.3f\n', 'LDA', lda_acc, lda_f1);
 
     % 胜出者
     accs = [dt_acc, best_rf_acc, svm_acc, lda_acc];
     names = {'DT','RF','SVM','LDA'};
     [best, best_i] = max(accs);
     fprintf('\n  最佳分类器: %s (%.2f%%)\n', names{best_i}, best);
-
-    if ~isnan(svm_acc)
-        fprintf('  非线性(DT/RF/SVM)均值: %.2f%%\n', mean([dt_acc, best_rf_acc, svm_acc]));
-    end
-    if ~isnan(lda_acc)
-        fprintf('  线性(LDA): %.2f%%\n', lda_acc);
-    end
+    fprintf('  非线性(DT/RF/SVM)均值: %.2f%%\n', mean(accs(1:3), 'omitnan'));
 end
 
 %% 特征重要性对比图
@@ -217,6 +231,39 @@ fprintf(' 对比分析完成!\n');
 fprintf('================================================================\n');
 
 %% 辅助函数
+function f1 = compute_cv_f1(cv_mdl, X, y)
+    % 从已训练的CV模型计算宏平均F1
+    y_pred = kfoldPredict(cv_mdl);
+    classes = categories(y);
+    f1_scores = zeros(length(classes), 1);
+    for c = 1:length(classes)
+        tp = sum((y_pred == classes{c}) & (y == classes{c}));
+        fp = sum((y_pred == classes{c}) & (y ~= classes{c}));
+        fn = sum((y_pred ~= classes{c}) & (y == classes{c}));
+        if tp + fp > 0, prec = tp / (tp + fp); else, prec = 0; end
+        if tp + fn > 0, rec = tp / (tp + fn); else, rec = 0; end
+        if prec + rec > 0, f1_scores(c) = 2 * prec * rec / (prec + rec); end
+    end
+    f1 = mean(f1_scores);
+end
+
+function f1 = compute_cv_f1_rf(X, y_num, nTrees)
+    % 对RF使用fitcensemble的KFold分区计算F1
+    cv_mdl = fitcensemble(X, y_num, 'Method', 'Bag', 'NumLearningCycles', nTrees, ...
+        'KFold', 5);
+    y_pred = kfoldPredict(cv_mdl);
+    f1_scores = zeros(2, 1);
+    for c = 0:1
+        tp = sum((y_pred == c) & (y_num == c));
+        fp = sum((y_pred == c) & (y_num ~= c));
+        fn = sum((y_pred ~= c) & (y_num == c));
+        if tp + fp > 0, prec = tp / (tp + fp); else, prec = 0; end
+        if tp + fn > 0, rec = tp / (tp + fn); else, rec = 0; end
+        if prec + rec > 0, f1_scores(c+1) = 2 * prec * rec / (prec + rec); end
+    end
+    f1 = mean(f1_scores);
+end
+
 function result = iif(condition, true_val, false_val)
     if condition
         result = true_val;
