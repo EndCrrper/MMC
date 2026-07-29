@@ -136,10 +136,29 @@ comp_names = {'SiO2', 'Na2O', 'K2O', 'CaO', 'MgO', 'Al2O3', ...
     'Fe2O3', 'CuO', 'PbO', 'BaO', 'P2O5', 'SrO', 'SnO2', 'SO2'};
 X2_raw = T2_raw{:, 2:15};
 
-% 零值替换：零值→eps（成分数据不允许零）
+% 零值处理：乘法替换法（Multiplicative Replacement）
+% 对于包含c个零值的D维组成，将每个零值替换为δ，并等比例压缩非零组分
+% 该策略保持非零组分间的比率关系（ratio structure），是成分数据分析的标准方法
+delta_zero = 0.01;  % 替换值 = 0.01%（与检测精度0.1%相差一个数量级）
 n_zeros = sum(X2_raw(:) == 0);
-X2_raw(X2_raw == 0) = eps;
-fprintf('零值替换: %d 个零值 → eps(≈%.2e)\n', n_zeros, eps);
+fprintf('零值处理: 共%d个零值，采用乘法替换法(delta=%.2f%%)\n', n_zeros, delta_zero);
+X2_raw_original = X2_raw;  % 保留原始副本用于对比
+for i_row = 1:size(X2_raw, 1)
+    row = X2_raw(i_row, :);
+    zero_mask = (row == 0);
+    if any(zero_mask)
+        c = sum(zero_mask);
+        sum_pos = sum(row(~zero_mask));
+        if sum_pos > 0
+            scale = 1 - c * delta_zero / sum_pos;
+            row(~zero_mask) = row(~zero_mask) * scale;
+        end
+        row(zero_mask) = delta_zero;
+        X2_raw(i_row, :) = row;
+    end
+end
+fprintf('  替换前非零成分总和: [%.2f, %.2f]\n', min(sum(X2_raw_original, 2)), max(sum(X2_raw_original, 2)));
+fprintf('  替换后非零成分总和: [%.2f, %.2f]（保持不变）\n', min(sum(X2_raw, 2)), max(sum(X2_raw, 2)));
 
 % 无效数据标注：成分总和超出[85, 105]范围的采样点
 comp_sums_raw = sum(X2_raw, 2);
@@ -215,8 +234,22 @@ fprintf('\n--- 四、表单3预处理 ---\n');
 % 成分矩阵
 X3_raw = T3_raw{:, 3:16};
 
-% 零值替换
-X3_raw(X3_raw == 0) = eps;
+% 零值处理：乘法替换法（与表单2一致）
+for i_row = 1:size(X3_raw, 1)
+    row = X3_raw(i_row, :);
+    zero_mask = (row == 0);
+    if any(zero_mask)
+        c = sum(zero_mask);
+        sum_pos = sum(row(~zero_mask));
+        if sum_pos > 0
+            scale = 1 - c * delta_zero / sum_pos;
+            row(~zero_mask) = row(~zero_mask) * scale;
+        end
+        row(zero_mask) = delta_zero;
+        X3_raw(i_row, :) = row;
+    end
+end
+fprintf('表单3零值处理完成（乘法替换法, delta=%.2f%%）\n', delta_zero);
 
 % 风化编码
 T3_proc = T3_raw;
