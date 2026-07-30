@@ -137,9 +137,7 @@ X3_select = X3_clr(:, selected);
 y_pred_pls_select = beta_select(1) + X3_select * beta_select(2:end);
 y_pred_pls_select_round = round(max(0, min(1, y_pred_pls_select)));
 
-% 翻转预测结果（plsregress输出需映射到 0=高钾, 1=铅钡）
-y_pred_pls_full = 1 - y_pred_pls_full;
-y_pred_pls_select = 1 - y_pred_pls_select;
+% 编码已修正为 高钾→0, 铅钡→1，无需翻转
 
 
 % 使用简化模型的预测结果作为PLS-DA的最终预测

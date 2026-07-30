@@ -80,10 +80,12 @@ fprintf('纹饰类别: %s\n', strjoin(orna_levels, ', '));
 T1_proc.ORNA_num = double(categorical(cellstr(T1_proc.ORNA))) - 1;
 
 % 类型编码: 高钾→0, 铅钡→1
-T1_proc.TYPE = categorical(cellstr(T1_proc.TYPE));
+% 注意: categorical默认按Unicode排序，中文'铅'(U+94C5)<'高'(U+9AD8)，
+% 必须显式指定顺序{'高钾','铅钡'}以确保编码正确
+T1_proc.TYPE = categorical(cellstr(T1_proc.TYPE), {'高钾', '铅钡'});
 type_levels = categories(T1_proc.TYPE);
 fprintf('玻璃类型: %s\n', strjoin(type_levels, ', '));
-T1_proc.TYPE_num = double(categorical(cellstr(T1_proc.TYPE))) - 1;
+T1_proc.TYPE_num = double(T1_proc.TYPE) - 1;  % 高钾→1-1=0, 铅钡→2-1=1
 
 % 颜色编码
 % 先处理缺失值：用众数填充
