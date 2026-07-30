@@ -8,9 +8,6 @@
 
 %% 初始化
 clc;  % 不使用clear以保持load/save共享数据
-fprintf('=============================================================\n');
-fprintf('[4/4] 问题4：成分关联关系与差异分析\n');
-fprintf('=============================================================\n');
 
 % 路径设置
 base_dir = fileparts(mfilename('fullpath'));
@@ -26,8 +23,8 @@ fprintf('预处理数据已加载\n');
 comp_labels = {'SiO_2', 'Na_2O', 'K_2O', 'CaO', 'MgO', 'Al_2O_3', ...
     'Fe_2O_3', 'CuO', 'PbO', 'BaO', 'P_2O_5', 'SrO', 'SnO_2', 'SO_2'};
 
-%% ========== 4.1 成分关联分析 ==========
-fprintf('\n========== 4.1 化学成分关联分析 ==========\n');
+%% 4.1 成分关联分析 %%
+fprintf('\n%%
 
 % 按类型分组
 high_k_idx = T2_proc.TYPE_num == 0;
@@ -86,8 +83,8 @@ for i = 1:length(comp_names)
     end
 end
 
-%% ========== 4.2 差异性比较 ==========
-fprintf('\n========== 4.2 差异性比较：Wilcoxon符号秩检验 ==========\n');
+%% 4.2 差异性比较 %%
+fprintf('\n%%
 
 % 将相关系数矩阵的上三角部分提取为向量
 n_comp = length(comp_names);
@@ -123,8 +120,8 @@ for k = 1:min(10, length(sort_idx))
         r_high_k_vec(idx), r_pb_vec(idx), abs(r_high_k_vec(idx) - r_pb_vec(idx)));
 end
 
-%% ========== 绘图 ==========
-fprintf('\n========== 生成问题4图表 ==========\n');
+%% 绘图 %%
+fprintf('\n%%
 
 % 图4.1：Pearson相关系数热图（三合一：全部/高钾/铅钡）
 figure('Position', [100, 100, 1800, 550]);
@@ -151,7 +148,6 @@ title('铅钡玻璃 Pearson相关系数', 'FontSize', 12, 'FontWeight', 'bold');
 axis square;
 
 sgtitle('问题4.1：化学成分Pearson相关系数热图', 'FontSize', 14, 'FontWeight', 'bold');
-saveas(gcf, fullfile(fig_dir, 'p4_correlation_heatmap.png'));
 print(gcf, fullfile(fig_dir, 'p4_correlation_heatmap_300.png'), '-dpng', '-r300');
 close(gcf);
 
@@ -173,8 +169,6 @@ title('铅钡玻璃 灰色关联度', 'FontSize', 12, 'FontWeight', 'bold');
 axis square;
 
 sgtitle('问题4.1：灰色关联度分析(GRA)热图', 'FontSize', 14, 'FontWeight', 'bold');
-saveas(gcf, fullfile(fig_dir, 'p4_gra_heatmap.png'));
-print(gcf, fullfile(fig_dir, 'p4_gra_heatmap_300.png'), '-dpng', '-r300');
 close(gcf);
 
 % 图4.3：高钾 vs 铅钡 相关系数散点图
@@ -189,7 +183,6 @@ title(sprintf('问题4.2：高钾 vs 铅钡 相关系数对比 (p=%.4f)', p_wilc
     'FontSize', 13, 'FontWeight', 'bold');
 legend('每对成分', 'y=x参考线', 'Location', 'best');
 grid on; axis equal;
-saveas(gcf, fullfile(fig_dir, 'p4_correlation_scatter.png'));
 print(gcf, fullfile(fig_dir, 'p4_correlation_scatter_300.png'), '-dpng', '-r300');
 close(gcf);
 
@@ -201,12 +194,10 @@ bar(sorted_diff, 'FaceColor', [0.3 0.6 0.9]);
 xlabel('成分对序号'); ylabel('相关系数差异 (高钾 - 铅钡)');
 title('问题4.2：逐成分对相关系数差异', 'FontSize', 13, 'FontWeight', 'bold');
 grid on;
-saveas(gcf, fullfile(fig_dir, 'p4_correlation_diff.png'));
-print(gcf, fullfile(fig_dir, 'p4_correlation_diff_300.png'), '-dpng', '-r300');
 close(gcf);
 
-%% ========== 模型检验 ==========
-fprintf('\n========== 模型检验 ==========\n');
+%% 模型检验 %%
+fprintf('\n%%
 
 % 检验1：相关系数显著性
 fprintf('\n1. Pearson相关系数显著性检验:\n');
@@ -241,11 +232,10 @@ end
 fprintf('  GRA Bootstrap标准差: %.4f ± %.4f\n', mean(gra_variation), std(gra_variation));
 fprintf('  GRA分析结果稳定\n');
 
-fprintf('\n=============================================================\n');
+fprintf('\n%%
 fprintf('问题4完成!\n');
-fprintf('=============================================================\n');
 
-%% ==================== 辅助函数 ====================
+%%
 
 function G = compute_GRA_matrix(X)
     % 计算灰色关联度矩阵

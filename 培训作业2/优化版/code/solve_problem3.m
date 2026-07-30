@@ -8,9 +8,6 @@
 
 %% 初始化
 clc;
-fprintf('=============================================================\n');
-fprintf('[3/4] 问题3：未知玻璃文物类型鉴别\n');
-fprintf('=============================================================\n');
 
 % 路径设置
 base_dir = fileparts(mfilename('fullpath'));
@@ -44,10 +41,9 @@ fprintf('  X3_clr维度: %d × %d\n', size(X3_clr, 1), size(X3_clr, 2));
 comp_labels = {'SiO_2', 'Na_2O', 'K_2O', 'CaO', 'MgO', 'Al_2O_3', ...
     'Fe_2O_3', 'CuO', 'PbO', 'BaO', 'P_2O_5', 'SrO', 'SnO_2', 'SO_2'};
 
-%% ==================== 方法一：决策树预测 ====================
-fprintf('\n=============================================================\n');
+%%
+fprintf('\n%%
 fprintf('方法一：决策树分类（风化/未风化分别建模）\n');
-fprintf('=============================================================\n');
 
 % 获取表单3的风化状态
 weat3 = T3_proc.WEAT_num;  % 0=未风化, 1=风化
@@ -106,10 +102,9 @@ for i = 1:height(T3_proc)
         y_pred_tree_proba(i, 1), y_pred_tree_proba(i, 2));
 end
 
-%% ==================== 方法二：PLS-DA预测 ====================
-fprintf('\n=============================================================\n');
+%%
+fprintf('\n%%
 fprintf('方法二：PLS-DA分类\n');
-fprintf('=============================================================\n');
 
 % PLS-DA的beta系数结构：
 % beta(1) = 截距项
@@ -163,10 +158,9 @@ n_agree = sum(y_pred_pls_full_round == y_pred_pls_select_round);
 fprintf('\n全模型与VIP简化模型一致性: %d/%d\n', n_agree, height(T3_proc));
 
 
-%% ==================== 两种方法对比 ====================
-fprintf('\n=============================================================\n');
+%%
+fprintf('\n%%
 fprintf('两种方法预测结果对比\n');
-fprintf('=============================================================\n');
 
 fprintf('\n%-10s %-6s %-14s %-14s %-10s\n', ...
     '样本编号', '风化', '决策树预测', 'PLS-DA预测', '是否一致');
@@ -186,10 +180,9 @@ end
 fprintf('\n两种方法一致率: %d/%d (%.1f%%)\n', ...
     n_consistent, height(T3_proc), 100 * n_consistent / height(T3_proc));
 
-%% ==================== 敏感性分析 ====================
-fprintf('\n=============================================================\n');
+%%
+fprintf('\n%%
 fprintf('敏感性分析\n');
-fprintf('=============================================================\n');
 
 % 扰动幅度
 perturbation = 0.01;
@@ -254,10 +247,9 @@ for i = 1:height(T3_proc)
         char(T3_proc.SAMPLE_ID(i)), type_name, stable_rate, stability_eval);
 end
 
-%% ==================== 最终预测结果汇总 ====================
-fprintf('\n=============================================================\n');
+%%
+fprintf('\n%%
 fprintf('最终预测结果汇总\n');
-fprintf('=============================================================\n');
 
 % 综合两种方法给出最终预测
 fprintf('\n综合两种方法的结果:\n');
@@ -313,8 +305,8 @@ end
 prediction_results.Final_Pred = final_pred;
 prediction_results.Final_Confidence = final_confidence;
 
-%% ==================== 绘图 ====================
-fprintf('\n========== 生成问题3图表 ==========\n');
+%%
+fprintf('\n%%
 
 % 图3.1：两种方法预测概率对比
 figure('Position', [100, 100, 1200, 500]);
@@ -338,7 +330,6 @@ title('PLS-DA预测', 'FontSize', 12, 'FontWeight', 'bold');
 grid on;
 
 sgtitle('问题3：两种方法预测结果对比', 'FontSize', 14, 'FontWeight', 'bold');
-saveas(gcf, fullfile(fig_dir, 'p3_prediction_comparison.png'));
 print(gcf, fullfile(fig_dir, 'p3_prediction_comparison_300.png'), '-dpng', '-r300');
 close(gcf);
 
@@ -368,8 +359,6 @@ title('PLS-DA：扰动敏感性', 'FontSize', 12, 'FontWeight', 'bold');
 grid on;
 
 sgtitle('问题3：敏感性分析（蒙特卡洛100次，δ=0.01）', 'FontSize', 14, 'FontWeight', 'bold');
-saveas(gcf, fullfile(fig_dir, 'p3_sensitivity.png'));
-print(gcf, fullfile(fig_dir, 'p3_sensitivity_300.png'), '-dpng', '-r300');
 close(gcf);
 
 % 图3.3：最终预测结果
@@ -394,11 +383,9 @@ for i = 1:height(T3_proc)
     text(i, final_confidence(i) + 0.03, type_name, ...
         'HorizontalAlignment', 'center', 'FontSize', 10, 'FontWeight', 'bold');
 end
-saveas(gcf, fullfile(fig_dir, 'p3_final_prediction.png'));
-print(gcf, fullfile(fig_dir, 'p3_final_prediction_300.png'), '-dpng', '-r300');
 close(gcf);
 
-%% ==================== 保存结果 ====================
+%%
 fprintf('\n--- 保存预测结果 ---\n');
 
 % 保存MAT文件
@@ -423,11 +410,10 @@ prediction_results_csv = table(T3_proc.SAMPLE_ID, weat3, ...
 writetable(prediction_results_csv, fullfile(result_dir, 'form3_predictions.csv'));
 fprintf('预测结果已保存到: %s\n', fullfile(result_dir, 'form3_predictions.csv'));
 
-fprintf('\n=============================================================\n');
+fprintf('\n%%
 fprintf('问题3完成!\n');
-fprintf('=============================================================\n');
 
-%% ==================== 辅助函数 ====================
+%%
 function result = iif(condition, true_val, false_val)
     if condition
         result = true_val;

@@ -9,9 +9,6 @@
 
 %% 初始化
 clc;  % 不使用clear以保持load/save共享数据
-fprintf('=============================================================\n');
-fprintf('[2/4] 问题2：类型分类与亚类划分\n');
-fprintf('=============================================================\n');
 
 % 路径设置
 base_dir = fileparts(mfilename('fullpath'));
@@ -27,8 +24,8 @@ fprintf('预处理数据已加载\n');
 comp_labels = {'SiO_2', 'Na_2O', 'K_2O', 'CaO', 'MgO', 'Al_2O_3', ...
     'Fe_2O_3', 'CuO', 'PbO', 'BaO', 'P_2O_5', 'SrO', 'SnO_2', 'SO_2'};
 
-%% ========== 2.1 决策树分类：高钾 vs 铅钡 ==========
-fprintf('\n========== 2.1 决策树分类 ==========\n');
+%% 2.1 决策树分类：高钾 vs 铅钡 %%
+fprintf('\n%%
 
 % 分别对未风化和风化样本建立决策树
 rng(42);  % 固定随机种子
@@ -176,8 +173,8 @@ save(fullfile(result_dir, 'decision_tree_models.mat'), ...
     'tree_unweathered', 'tree_weathered', 'tree_all', ...
     'acc_unweathered', 'acc_weathered');
 
-%% ========== 2.1.5 PLS-DA建模（供问题3使用）==========
-fprintf('\n========== 2.1.5 PLS-DA建模 ==========\n');
+%% 2.1.5 PLS-DA建模（供问题3使用）%%
+fprintf('\n%%
 
 % 使用CLR变换后的全部69个样本训练PLS-DA
 X_pls = X2_clr;
@@ -227,8 +224,8 @@ save(fullfile(result_dir, 'plsda_vip_results.mat'), ...
     'beta', 'selected', 'VIP', 'idx_sort', 'ncomp');
 fprintf('PLS-DA模型已保存到 plsda_vip_results.mat\n');
 
-%% ========== 2.2 亚类划分：层次聚类 ==========
-fprintf('\n========== 2.2 亚类划分（层次聚类）==========\n');
+%% 2.2 亚类划分：层次聚类 %%
+fprintf('\n%%
 
 % 先分四组，再在每组内进行聚类
 groups_p2 = {
@@ -293,8 +290,8 @@ for g = 1:4
     end
 end
 
-%% ========== 2.3 合理性与敏感性分析 ==========
-fprintf('\n========== 2.3 分类合理性验证与敏感性分析 ==========\n');
+%% 2.3 合理性与敏感性分析 %%
+fprintf('\n%%
 
 % 敏感性分析：对CLR数据加入微小扰动，观察分类结果变化
 perturbation = 0.01;
@@ -339,8 +336,8 @@ for weat_state = 0:1
         '分类结果稳定（扰动后无变化）', '分类结果对微小扰动敏感'));
 end
 
-%% ========== 绘图 ==========
-fprintf('\n========== 生成问题2图表 ==========\n');
+%% 绘图 %%
+fprintf('\n%%
 
 % 图2.1：决策树可视化（未风化样本）
 figure('Position', [100, 100, 1400, 600]);
@@ -350,8 +347,6 @@ if exist('tree_unweathered', 'var')
     title(sprintf('未风化样本决策树 (Acc=%.2f%%)', acc_unweathered * 100), ...
         'FontSize', 12, 'FontWeight', 'bold');
 end
-saveas(gcf, fullfile(fig_dir, 'p2_decision_tree.png'));
-print(gcf, fullfile(fig_dir, 'p2_decision_tree_300.png'), '-dpng', '-r300');
 close(gcf);
 
 % 图2.2：混淆矩阵（使用imagesc代替confusionchart以兼容批处理模式）
@@ -388,8 +383,6 @@ if exist('y_test_w', 'var') && exist('y_pred_w', 'var')
     title(sprintf('风化混淆矩阵 (Acc=%.1f%%)', acc_weathered * 100), ...
         'FontSize', 11, 'FontWeight', 'bold');
 end
-saveas(gcf, fullfile(fig_dir, 'p2_confusion_matrix.png'));
-print(gcf, fullfile(fig_dir, 'p2_confusion_matrix_300.png'), '-dpng', '-r300');
 close(gcf);
 
 % 图2.3：特征重要性
@@ -413,7 +406,6 @@ if exist('tree_weathered', 'var')
     xlabel('重要性'); set(gca, 'YDir', 'reverse'); grid on;
 end
 sgtitle('问题2.1：决策树特征重要性排名', 'FontSize', 14, 'FontWeight', 'bold');
-saveas(gcf, fullfile(fig_dir, 'p2_feature_importance.png'));
 print(gcf, fullfile(fig_dir, 'p2_feature_importance_300.png'), '-dpng', '-r300');
 close(gcf);
 
@@ -430,7 +422,6 @@ for g = 1:4
     title(sprintf('问题2.2：%s 样本聚类树状图', groups_p2{g, 1}), ...
         'FontSize', 13, 'FontWeight', 'bold');
     xlabel('样本'); ylabel('距离');
-    saveas(gcf, fullfile(fig_dir, sprintf('p2_dendrogram_g%d.png', g)));
     close(gcf);
 end
 
@@ -445,12 +436,10 @@ ylim([0, 105]);
 text(1:2, bar_data + 2, arrayfun(@(x) sprintf('%.1f%%', x), bar_data, 'UniformOutput', false), ...
     'HorizontalAlignment', 'center', 'FontSize', 12, 'FontWeight', 'bold');
 grid on;
-saveas(gcf, fullfile(fig_dir, 'p2_accuracy_summary.png'));
-print(gcf, fullfile(fig_dir, 'p2_accuracy_summary_300.png'), '-dpng', '-r300');
 close(gcf);
 
-%% ========== 模型检验 ==========
-fprintf('\n========== 模型检验 ==========\n');
+%% 模型检验 %%
+fprintf('\n%%
 
 % 检验1：交叉验证
 fprintf('\n1. 5折交叉验证:\n');
@@ -485,11 +474,10 @@ for g = 1:4
     end
 end
 
-fprintf('\n=============================================================\n');
+fprintf('\n%%
 fprintf('问题2完成!\n');
-fprintf('=============================================================\n');
 
-%% ==================== 辅助函数 ====================
+%%
 
 function result = iif(condition, true_val, false_val)
     if condition

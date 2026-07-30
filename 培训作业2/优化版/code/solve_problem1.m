@@ -9,9 +9,6 @@
 
 %% 初始化
 clc;  % 不使用clear以保持load/save共享数据
-fprintf('=============================================================\n');
-fprintf('[1/4] 问题1：风化关联分析与化学成分统计规律\n');
-fprintf('=============================================================\n');
 
 % 路径设置
 base_dir = fileparts(mfilename('fullpath'));
@@ -23,8 +20,8 @@ load(fullfile(result_dir, 'preprocessed_data.mat'), ...
     'T1_proc', 'T2_merged', 'X2_clr', 'X2_norm', 'X2_raw', 'comp_names', 'T2_proc');
 fprintf('预处理数据已加载\n');
 
-%% ========== 1.1 风化与类型/纹饰/颜色的关联性分析 ==========
-fprintf('\n========== 1.1 风化关联分析：RC交叉表检验 ==========\n');
+%% 1.1 风化与类型/纹饰/颜色的关联性分析 %%
+fprintf('\n%%
 
 % 构建列联表
 % 风化 vs 类型
@@ -55,7 +52,7 @@ fprintf('\n--- 风化 vs 颜色 检验 ---\n');
 fprintf('%s: 统计量=%.4f, p值=%.4f\n', method_WC, stat_WC, p_WC);
 
 % 结论
-fprintf('\n===== 1.1 结论 =====\n');
+fprintf('\n%%
 alpha = 0.05;
 if p_WT < alpha
     fprintf('风化与玻璃类型显著相关 (p=%.4f < 0.05)\n', p_WT);
@@ -73,8 +70,8 @@ else
     fprintf('风化与颜色无显著相关 (p=%.4f >= 0.05)\n', p_WC);
 end
 
-%% ========== 1.2 化学成分统计规律 ==========
-fprintf('\n========== 1.2 化学成分统计规律 ==========\n');
+%% 1.2 化学成分统计规律 %%
+fprintf('\n%%
 
 % 将数据按类型+风化为四组
 groups = {
@@ -117,8 +114,8 @@ for g = 1:4
         'std', std_g, 'cv', cv_g, 'skew', skew_g, 'kurt', kurt_g);
 end
 
-%% ========== 1.3 预测风化前化学成分 ==========
-fprintf('\n========== 1.3 风化前化学成分预测 ==========\n');
+%% 1.3 预测风化前化学成分 %%
+fprintf('\n%%
 
 % 总体抽样预测模型：
 % 假设未风化数据 ~ N(mu_X, sigma_X^2), 风化数据 ~ N(mu_Y, sigma_Y^2)
@@ -194,8 +191,8 @@ for type_idx = 0:1
         'weat_idx', weat_idx, 'unweat_idx', unweat_idx);
 end
 
-%% ========== 绘图 ==========
-fprintf('\n========== 生成问题1图表 ==========\n');
+%% 绘图 %%
+fprintf('\n%%
 
 % 图1.1：风化关联性卡方检验结果柱状图
 figure('Position', [100, 100, 1000, 500]);
@@ -210,7 +207,6 @@ legend('p值', '\alpha=0.05', '\alpha=0.01', 'Location', 'northwest');
 text(1:3, p_values + 0.02, arrayfun(@(x) sprintf('p=%.4f', x), p_values, 'UniformOutput', false), ...
     'HorizontalAlignment', 'center', 'FontSize', 11);
 grid on;
-saveas(gcf, fullfile(fig_dir, 'p1_chi2_results.png'));
 print(gcf, fullfile(fig_dir, 'p1_chi2_results_300.png'), '-dpng', '-r300');
 close(gcf);
 
@@ -240,7 +236,6 @@ annotation('textbox', [0.1, 0.90, 0.8, 0.06], ...
     'HorizontalAlignment', 'center', ...
     'VerticalAlignment', 'top', ...
     'EdgeColor', 'none');
-saveas(gcf, fullfile(fig_dir, 'p1_four_groups_boxplot.png'));
 print(gcf, fullfile(fig_dir, 'p1_four_groups_boxplot_300.png'), '-dpng', '-r300');
 close(gcf);
 
@@ -270,12 +265,10 @@ if sum(T2_proc.TYPE_num == 1 & T2_proc.WEAT_num == 1) > 0
     ylabel('含量 (%)'); xtickangle(45); grid on;
 end
 sgtitle('问题1.3：风化前后成分对比', 'FontSize', 14, 'FontWeight', 'bold');
-saveas(gcf, fullfile(fig_dir, 'p1_weathering_comparison.png'));
-print(gcf, fullfile(fig_dir, 'p1_weathering_comparison_300.png'), '-dpng', '-r300');
 close(gcf);
 
-%% ========== 模型检验 ==========
-fprintf('\n========== 模型检验 ==========\n');
+%% 模型检验 %%
+fprintf('\n%%
 
 % 检验1：卡方检验适用条件验证
 fprintf('\n1. 卡方检验适用条件验证:\n');
@@ -306,11 +299,10 @@ for g_idx = 1:4
     end
 end
 
-fprintf('\n=============================================================\n');
+fprintf('\n%%
 fprintf('问题1完成!\n');
-fprintf('=============================================================\n');
 
-%% ==================== 辅助函数 ====================
+%%
 
 function [stat, pval, method] = chi2test(CT)
     % 根据卡方检验适用条件自动选择检验方法

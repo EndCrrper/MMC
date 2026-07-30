@@ -8,12 +8,10 @@
 %   预处理对比图（成分分布箱线图）
 
 %% 初始化
-clc;  % 不使用clear以保持load/save共享数据
-fprintf('=============================================================\n');
-fprintf('古代玻璃成分分析与鉴别 —— 数据预处理\n');
-fprintf('=============================================================\n');
+clc;
+fprintf('数据预处理...\n');
 
-% 路径设置（相对路径）
+% 路径
 base_dir = fileparts(mfilename('fullpath'));
 result_dir = fullfile(base_dir, '..', 'result');
 fig_dir = fullfile(result_dir, 'figures');
@@ -28,8 +26,8 @@ if ~exist(attach_path, 'file')
 end
 fprintf('数据源: %s\n', attach_path);
 
-%% ==================== 一、读取原始数据 ====================
-fprintf('\n--- 一、读取原始数据 ---\n');
+%% 一、读取原始数据 %%
+fprintf('\n-- 一、读取原始数据 ---\n');
 
 % 表单1：文物表面信息
 opts1 = spreadsheetImportOptions('NumVariables', 4);
@@ -67,8 +65,8 @@ opts3 = setvaropts(opts3, {'SiO2', 'Na2O', 'K2O', 'CaO', 'MgO', ...
 T3_raw = readtable(attach_path, opts3, 'UseExcel', false);
 fprintf('表单3 读取完成: %d 行, 未知样本\n', height(T3_raw));
 
-%% ==================== 二、表单1预处理：类别变量编码 ====================
-fprintf('\n--- 二、表单1预处理 ---\n');
+%% 二、表单1预处理：类别变量编码 %%
+fprintf('\n-- 二、表单1预处理 ---\n');
 
 % 创建副本
 T1_proc = T1;
@@ -116,8 +114,8 @@ T1_proc.WEAT_num = double(categorical(cellstr(T1_proc.WEAT))) - 1;
 fprintf('表单1编码完成: 纹饰(%d类), 类型(%d类), 颜色(%d类), 风化(%d类)\n', ...
     length(orna_levels), length(type_levels), length(color_levels), length(weat_levels));
 
-%% ==================== 三、表单2预处理：成分数据清洗 ====================
-fprintf('\n--- 三、表单2预处理 ---\n');
+%% 三、表单2预处理：成分数据清洗 %%
+fprintf('\n-- 三、表单2预处理 ---\n');
 
 % 提取文物编号（去除部位/风化点标记）
 sample_ids = cellstr(T2_raw.SAMPLE_ID);
@@ -228,8 +226,8 @@ T2_merged = [T2_proc, X2_table];
 fprintf('表单2预处理完成: %d采样点, CLR变换后有NaN=%d\n', ...
     height(T2_merged), sum(isnan(table2array(X2_table)), 'all'));
 
-%% ==================== 四、表单3预处理 ====================
-fprintf('\n--- 四、表单3预处理 ---\n');
+%% 四、表单3预处理 %%
+fprintf('\n-- 四、表单3预处理 ---\n');
 
 % 成分矩阵
 X3_raw = T3_raw{:, 3:16};
@@ -283,8 +281,8 @@ end
 
 fprintf('表单3预处理完成: %d 个未知样本\n', height(T3_proc));
 
-%% ==================== 五、绘图：预处理对比 ====================
-fprintf('\n--- 五、生成预处理对比图 ---\n');
+%% 五、绘图：预处理对比 %%
+fprintf('\n-- 五、生成预处理对比图 ---\n');
 
 % 图1：主要成分含量箱线图（高钾 vs 铅钡，选4种关键成分）
 figure('Position', [100, 100, 1600, 600]);
@@ -304,41 +302,14 @@ for p = 1:4
     ylabel('归一化含量 (%)');
     grid on;
 end
-sgtitle('关键成分分布对比（归一化后）', 'FontSize', 14, 'FontWeight', 'bold');
-saveas(gcf, fullfile(fig_dir, 'preprocess_comparison.png'));
+sgtitle('关键成分分布对比', 'FontSize', 14, 'FontWeight', 'bold');
 print(gcf, fullfile(fig_dir, 'preprocess_comparison_300.png'), '-dpng', '-r300');
-close(gcf);
-
-% 图2：缺失值热力图（预处理前后）
-figure('Position', [100, 100, 1400, 500]);
-
-subplot(1, 2, 1);
-nan_before = isnan(T2_raw{:, 2:15}) | (T2_raw{:, 2:15} == 0);
-imagesc(nan_before);
-colormap(gca, [0.95 0.95 0.95; 0.8 0.2 0.2]);
-title('预处理前：缺失/零值分布（红色=缺失/零值）', 'FontSize', 12, 'FontWeight', 'bold');
-xlabel('化学成分'); ylabel('采样点');
-set(gca, 'XTick', 1:14, 'XTickLabel', comp_names, 'XTickLabelRotation', 45);
-colorbar('off');
-
-subplot(1, 2, 2);
-nan_after = isnan(X2_clr);
-imagesc(nan_after);
-colormap(gca, [0.95 0.95 0.95; 0.2 0.6 0.2]);
-title('预处理后：缺失值分布（绿色=缺失）', 'FontSize', 12, 'FontWeight', 'bold');
-xlabel('化学成分'); ylabel('采样点');
-set(gca, 'XTick', 1:14, 'XTickLabel', comp_names, 'XTickLabelRotation', 45);
-colorbar('off');
-
-sgtitle('缺失值处理前后对比', 'FontSize', 14, 'FontWeight', 'bold');
-saveas(gcf, fullfile(fig_dir, 'preprocess_missing.png'));
-print(gcf, fullfile(fig_dir, 'preprocess_missing_300.png'), '-dpng', '-r300');
 close(gcf);
 
 fprintf('预处理图1-2已保存到 result/figures/\n');
 
-%% ==================== 六、保存预处理结果 ====================
-fprintf('\n--- 六、保存预处理结果 ---\n');
+%% 六、保存预处理结果 %%
+fprintf('\n-- 六、保存预处理结果 ---\n');
 
 % 保存为CSV（MAT格式也保存）
 % 保存完整预处理结果
@@ -377,6 +348,5 @@ fprintf('  %s\n', fullfile(result_dir, 'cleaned_data.csv'));
 fprintf('  %s\n', fullfile(result_dir, 'preprocessed_data.mat'));
 fprintf('  form1_encoded.csv, form2_clr.csv, form2_normalized.csv, form3_clr.csv\n');
 
-fprintf('\n=============================================================\n');
+fprintf('\n%%
 fprintf('数据预处理完成!\n');
-fprintf('=============================================================\n');
