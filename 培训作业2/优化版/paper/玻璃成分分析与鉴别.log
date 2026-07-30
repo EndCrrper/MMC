@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.5.21)  30 JUL 2026 17:36
+This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.5.21)  30 JUL 2026 20:00
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1307,7 +1307,7 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) [1
 
 ] [2] [3]
-Overfull \hbox (23.92216pt too wide) in paragraph at lines 286--287
+Overfull \hbox (23.92216pt too wide) in paragraph at lines 290--291
  [][] 
  []
 
@@ -1324,104 +1324,23 @@ File: ../result/figures/p1_four_groups_boxplot_300.png Graphic file (type bmp)
 File: ../result/figures/p2_feature_importance_300.png Graphic file (type bmp)
 <../result/figures/p2_feature_importance_300.png>
  [10] [11]
-Overfull \hbox (5.8167pt too wide) in paragraph at lines 622--623
+Overfull \hbox (5.8167pt too wide) in paragraph at lines 626--627
 []\TU/lmr/m/n/12 R \TU/SimSun(0)/m/n/12 型 聚 类 将 \TU/lmr/m/n/12 14 \TU/SimSun(0)
 /m/n/12 种 化 学 成 分 为 三 大 功 能 群：|  网 络 形 成 体  |（\TU/lmr/m/n/12 SiO$[]$ \TU/SimSun
 (0)/m/n/12 等） 、|  助 熔 剂  |（\TU/lmr/m/n/12 K$[]$O/PbO/BaO
  []
 
 [12]
-File: ../result/figures/p3_prediction_confidence_300.png Graphic file (type bmp
+File: ../result/figures/p3_prediction_comparison_300.png Graphic file (type bmp
 )
-<../result/figures/p3_prediction_confidence_300.png>
-
-! Extra alignment tab has been changed to \cr.
-<recently read> \endtemplate 
-                             
-l.697 \end{tabularx}
-                    
-You have given more \span or & marks than there were
-in the preamble to the \halign or \valign now in progress.
-So I'll assume that you meant to type \cr instead.
-
-! Extra alignment tab has been changed to \cr.
-<recently read> \endtemplate 
-                             
-l.697 \end{tabularx}
-                    
-You have given more \span or & marks than there were
-in the preamble to the \halign or \valign now in progress.
-So I'll assume that you meant to type \cr instead.
-
-! Extra alignment tab has been changed to \cr.
-<recently read> \endtemplate 
-                             
-l.697 \end{tabularx}
-                    
-You have given more \span or & marks than there were
-in the preamble to the \halign or \valign now in progress.
-So I'll assume that you meant to type \cr instead.
-
-! Extra alignment tab has been changed to \cr.
-<recently read> \endtemplate 
-                             
-l.697 \end{tabularx}
-                    
-You have given more \span or & marks than there were
-in the preamble to the \halign or \valign now in progress.
-So I'll assume that you meant to type \cr instead.
-
-! Extra alignment tab has been changed to \cr.
-<recently read> \endtemplate 
-                             
-l.697 \end{tabularx}
-                    
-You have given more \span or & marks than there were
-in the preamble to the \halign or \valign now in progress.
-So I'll assume that you meant to type \cr instead.
-
-! Extra alignment tab has been changed to \cr.
-<recently read> \endtemplate 
-                             
-l.697 \end{tabularx}
-                    
-You have given more \span or & marks than there were
-in the preamble to the \halign or \valign now in progress.
-So I'll assume that you meant to type \cr instead.
-
-! Extra alignment tab has been changed to \cr.
-<recently read> \endtemplate 
-                             
-l.697 \end{tabularx}
-                    
-You have given more \span or & marks than there were
-in the preamble to the \halign or \valign now in progress.
-So I'll assume that you meant to type \cr instead.
-
-! Extra alignment tab has been changed to \cr.
-<recently read> \endtemplate 
-                             
-l.697 \end{tabularx}
-                    
-You have given more \span or & marks than there were
-in the preamble to the \halign or \valign now in progress.
-So I'll assume that you meant to type \cr instead.
-
-! Extra alignment tab has been changed to \cr.
-<recently read> \endtemplate 
-                             
-l.697 \end{tabularx}
-                    
-You have given more \span or & marks than there were
-in the preamble to the \halign or \valign now in progress.
-So I'll assume that you meant to type \cr instead.
-
-[13] [14] [15]
+<../result/figures/p3_prediction_comparison_300.png>
+ [13]
 File: ../result/figures/p4_correlation_heatmap_300.png Graphic file (type bmp)
 <../result/figures/p4_correlation_heatmap_300.png>
+ [14]
 File: ../result/figures/p4_correlation_scatter_300.png Graphic file (type bmp)
 <../result/figures/p4_correlation_scatter_300.png>
- [16] [17] [18] [19] [20]
+ [15] [16] [17] [18]
 
 Package fontspec Info: 
 (fontspec)             Could not resolve font "FangSong/BI" (it probably
@@ -1450,21 +1369,21 @@ Package fontspec Info:
 
 
 Missing character: There is no δ (U+03B4) in font [lmmono10-regular]:!
-[21] [22] (./玻璃成分分析与鉴别.aux)
+[19] [20] (./玻璃成分分析与鉴别.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2022/08/05>
  ***********
 Package rerunfilecheck Info: File `玻璃成分分析与鉴别.out' has not changed.
-(rerunfilecheck)             Checksum: 949D790CEA06430FE0725054E0269429;5806.
+(rerunfilecheck)             Checksum: BA388AC3EB6D08F3158216D5C9B97367;5750.
  ) 
 Here is how much of TeX's memory you used:
- 31621 strings out of 468168
- 679151 string characters out of 5436524
+ 31600 strings out of 468168
+ 678003 string characters out of 5436524
  1645661 words of memory out of 5000000
- 59815 multiletter control sequences out of 15000+600000
+ 59794 multiletter control sequences out of 15000+600000
  642324 words of font info for 140 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  93i,16n,111p,1203b,1840s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on 玻璃成分分析与鉴别.pdf (22 pages).
+Output written on 玻璃成分分析与鉴别.pdf (20 pages).
