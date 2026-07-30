@@ -176,6 +176,57 @@ save(fullfile(result_dir, 'decision_tree_models.mat'), ...
     'tree_unweathered', 'tree_weathered', 'tree_all', ...
     'acc_unweathered', 'acc_weathered');
 
+%% ========== 2.1.5 PLS-DA建模（供问题3使用）==========
+fprintf('\n========== 2.1.5 PLS-DA建模 ==========\n');
+
+% 使用CLR变换后的全部69个样本训练PLS-DA
+X_pls = X2_clr;
+y_pls = T2_proc.TYPE_num;
+
+% 自动确定最优成分数（最多10个）
+ncomp_max = min(10, size(X_pls, 1) - 1);
+[~, ~, ~, ~, ~, PCTVAR_all, MSE_pls] = plsregress(X_pls, y_pls, ncomp_max);
+% MSE_pls(2,:)有ncomp_max+1列（0,1,...,ncomp_max个成分），跳过第1列(0成分)
+[~, ncomp] = min(MSE_pls(2, 2:end));
+fprintf('最优PLS成分数: %d\n', ncomp);
+
+% 用最优成分数重新训练，捕获完整输出
+[~, ~, ~, ~, beta, PCTVAR, ~, stats] = plsregress(X_pls, y_pls, ncomp);
+
+% 计算VIP (Variable Importance in Projection)
+% VIP_j = sqrt(D * sum(w_{ja}^2 * RYY_a) / sum(RYY_a))
+W0 = stats.W;
+A_used = size(W0, 2);
+RYY = PCTVAR(2, 1:A_used);  % Y方差解释比例
+RYY_total = sum(RYY);
+VIP = zeros(14, 1);
+for j = 1:14
+    w_sq = W0(j, 1:A_used).^2;
+    VIP(j) = sqrt(14 * sum(w_sq .* RYY) / RYY_total);
+end
+
+% VIP > 1的变量（若无则取VIP最高的5个）
+selected = find(VIP > 1);
+[VIP_sorted_vals, idx_sort] = sort(VIP, 'descend');
+if isempty(selected)
+    selected = idx_sort(1:min(5, length(idx_sort)));
+    fprintf('  注意: 无VIP>1变量，改用Top-%d变量\n', length(selected));
+end
+comp_labels_short = {'SiO_2','Na_2O','K_2O','CaO','MgO','Al_2O_3', ...
+    'Fe_2O_3','CuO','PbO','BaO','P_2O_5','SrO','SnO_2','SO_2'};
+
+fprintf('最优PLS成分数: %d\n', ncomp);
+fprintf('VIP > 1的变量: %d个 (', length(selected));
+for i = 1:length(selected)
+    fprintf('%s ', comp_labels_short{selected(i)});
+end
+fprintf(')\n');
+
+% 保存PLS-DA结果
+save(fullfile(result_dir, 'plsda_vip_results.mat'), ...
+    'beta', 'selected', 'VIP', 'idx_sort', 'ncomp');
+fprintf('PLS-DA模型已保存到 plsda_vip_results.mat\n');
+
 %% ========== 2.2 亚类划分：层次聚类 ==========
 fprintf('\n========== 2.2 亚类划分（层次聚类）==========\n');
 

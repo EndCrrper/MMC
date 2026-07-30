@@ -130,16 +130,14 @@ y_pred_pls_full_round = round(max(0, min(1, y_pred_pls_full)));
 fprintf('\n--- 仅使用VIP>1变量重新拟合PLS-DA ---\n');
 X2_select = X2_clr(:, selected);
 y2 = T2_proc.TYPE_num;
-[~, ~, ~, ~, beta_select, ~, ~, ~] = plsregress(X2_select, y2, ncomp);
-
-fprintf('简化模型beta维度: %d × 1\n', length(beta_select));
+ncomp_select = min(ncomp, size(X2_select, 2));
+[~, ~, ~, ~, beta_select, ~, ~, ~] = plsregress(X2_select, y2, ncomp_select);
+fprintf('简化模型成分数: %d, beta维度: %d × 1\n', ncomp_select, length(beta_select));
 X3_select = X3_clr(:, selected);
 y_pred_pls_select = beta_select(1) + X3_select * beta_select(2:end);
 y_pred_pls_select_round = round(max(0, min(1, y_pred_pls_select)));
 
-% 翻转预测结果（因为plsda_vip_results.mat用的是旧编码）
-y_pred_pls_full = 1 - y_pred_pls_full;
-y_pred_pls_select = 1 - y_pred_pls_select;
+% 翻转预测结果（plsregress输出需映射到 0=高钾, 1=铅钡）
 y_pred_pls_full = 1 - y_pred_pls_full;
 y_pred_pls_select = 1 - y_pred_pls_select;
 
