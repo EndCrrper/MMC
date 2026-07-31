@@ -311,42 +311,14 @@ fprintf('预处理图1-2已保存到 result/figures/\n');
 %% 六、保存预处理结果 %%
 fprintf('\n-- 六、保存预处理结果 ---\n');
 
-% 保存为CSV（MAT格式也保存）
-% 保存完整预处理结果
-% 表单1编码结果
-T1_save = table((1:height(T1_proc))', T1_proc.ORNA_num, T1_proc.TYPE_num, ...
-    T1_proc.COLOR_num, T1_proc.WEAT_num, ...
-    'VariableNames', {'文物编号', '纹饰_编码', '类型_编码', '颜色_编码', '风化_编码'});
-writetable(T1_save, fullfile(result_dir, 'form1_encoded.csv'));
-
-% 表单2 CLR数据 + 元信息
-T2_full = [T2_proc(:, {'ARTIFACT_NUM', 'TYPE_num', 'WEAT_num'}), X2_table];
-writetable(T2_full, fullfile(result_dir, 'form2_clr.csv'));
-
-% 表单2归一化数据
-T2_norm_full = [T2_proc(:, {'ARTIFACT_NUM', 'TYPE_num', 'WEAT_num'}), X2_norm_table];
-writetable(T2_norm_full, fullfile(result_dir, 'form2_normalized.csv'));
-
-% 表单3 CLR数据
-T3_save = [T3_proc(:, {'SAMPLE_ID', 'WEAT'}), ...
-    array2table(X3_clr, 'VariableNames', comp_names)];
-writetable(T3_save, fullfile(result_dir, 'form3_clr.csv'));
-
-% 保存所有预处理数据的MAT文件
+% 保存所有预处理数据的MAT文件（供后续脚本加载）
 save(fullfile(result_dir, 'preprocessed_data.mat'), ...
     'T1_proc', 'T2_merged', 'T3_proc', ...
     'X2_clr', 'X2_norm', 'X2_raw', 'X3_clr', 'X3_norm', 'X3_raw', ...
     'comp_names', 'T2_proc');
 
-% 保存汇总cleaned_data
-% 合并表单2的元信息和CLR数据
-all_data = [T2_proc(:, {'ARTIFACT_NUM', 'TYPE_num', 'WEAT_num'}), X2_table];
-writetable(all_data, fullfile(result_dir, 'cleaned_data.csv'));
-
 fprintf('预处理结果已保存:\n');
-fprintf('  %s\n', fullfile(result_dir, 'cleaned_data.csv'));
 fprintf('  %s\n', fullfile(result_dir, 'preprocessed_data.mat'));
-fprintf('  form1_encoded.csv, form2_clr.csv, form2_normalized.csv, form3_clr.csv\n');
 
 fprintf('\n%%\n');
 fprintf('数据预处理完成!\n');
