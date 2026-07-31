@@ -21,7 +21,7 @@ load(fullfile(result_dir, 'preprocessed_data.mat'), ...
 fprintf('预处理数据已加载\n');
 
 %% 1.1 风化与类型/纹饰/颜色的关联性分析 %%
-fprintf('\n%%
+fprintf('\n%%\n');
 
 % 构建列联表
 % 风化 vs 类型
@@ -52,7 +52,7 @@ fprintf('\n--- 风化 vs 颜色 检验 ---\n');
 fprintf('%s: 统计量=%.4f, p值=%.4f\n', method_WC, stat_WC, p_WC);
 
 % 结论
-fprintf('\n%%
+fprintf('\n%%\n');
 alpha = 0.05;
 if p_WT < alpha
     fprintf('风化与玻璃类型显著相关 (p=%.4f < 0.05)\n', p_WT);
@@ -71,7 +71,7 @@ else
 end
 
 %% 1.2 化学成分统计规律 %%
-fprintf('\n%%
+fprintf('\n%%\n');
 
 % 将数据按类型+风化为四组
 groups = {
@@ -115,7 +115,7 @@ for g = 1:4
 end
 
 %% 1.3 预测风化前化学成分 %%
-fprintf('\n%%
+fprintf('\n%%\n');
 
 % 总体抽样预测模型：
 % 假设未风化数据 ~ N(mu_X, sigma_X^2), 风化数据 ~ N(mu_Y, sigma_Y^2)
@@ -192,7 +192,7 @@ for type_idx = 0:1
 end
 
 %% 绘图 %%
-fprintf('\n%%
+fprintf('\n%%\n');
 
 % 图1.1：风化关联性卡方检验结果柱状图
 figure('Position', [100, 100, 1000, 500]);
@@ -268,7 +268,7 @@ sgtitle('问题1.3：风化前后成分对比', 'FontSize', 14, 'FontWeight', 'b
 close(gcf);
 
 %% 模型检验 %%
-fprintf('\n%%
+fprintf('\n%%\n');
 
 % 检验1：卡方检验适用条件验证
 fprintf('\n1. 卡方检验适用条件验证:\n');
@@ -299,7 +299,7 @@ for g_idx = 1:4
     end
 end
 
-fprintf('\n%%
+fprintf('\n%%\n');
 fprintf('问题1完成!\n');
 
 %%

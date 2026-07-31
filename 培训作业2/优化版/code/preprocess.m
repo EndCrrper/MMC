@@ -348,5 +348,5 @@ fprintf('  %s\n', fullfile(result_dir, 'cleaned_data.csv'));
 fprintf('  %s\n', fullfile(result_dir, 'preprocessed_data.mat'));
 fprintf('  form1_encoded.csv, form2_clr.csv, form2_normalized.csv, form3_clr.csv\n');
 
-fprintf('\n%%
+fprintf('\n%%\n');
 fprintf('数据预处理完成!\n');

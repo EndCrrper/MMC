@@ -25,7 +25,7 @@ comp_labels = {'SiO_2', 'Na_2O', 'K_2O', 'CaO', 'MgO', 'Al_2O_3', ...
     'Fe_2O_3', 'CuO', 'PbO', 'BaO', 'P_2O_5', 'SrO', 'SnO_2', 'SO_2'};
 
 %% 2.1 决策树分类：高钾 vs 铅钡 %%
-fprintf('\n%%
+fprintf('\n%%\n');
 
 % 分别对未风化和风化样本建立决策树
 rng(42);  % 固定随机种子
@@ -174,7 +174,7 @@ save(fullfile(result_dir, 'decision_tree_models.mat'), ...
     'acc_unweathered', 'acc_weathered');
 
 %% 2.1.5 PLS-DA建模（供问题3使用）%%
-fprintf('\n%%
+fprintf('\n%%\n');
 
 % 使用CLR变换后的全部69个样本训练PLS-DA
 X_pls = X2_clr;
@@ -225,7 +225,7 @@ save(fullfile(result_dir, 'plsda_vip_results.mat'), ...
 fprintf('PLS-DA模型已保存到 plsda_vip_results.mat\n');
 
 %% 2.2 亚类划分：层次聚类 %%
-fprintf('\n%%
+fprintf('\n%%\n');
 
 % 先分四组，再在每组内进行聚类
 groups_p2 = {
@@ -291,7 +291,7 @@ for g = 1:4
 end
 
 %% 2.3 合理性与敏感性分析 %%
-fprintf('\n%%
+fprintf('\n%%\n');
 
 % 敏感性分析：对CLR数据加入微小扰动，观察分类结果变化
 perturbation = 0.01;
@@ -337,7 +337,7 @@ for weat_state = 0:1
 end
 
 %% 绘图 %%
-fprintf('\n%%
+fprintf('\n%%\n');
 
 % 图2.1：决策树可视化（未风化样本）
 figure('Position', [100, 100, 1400, 600]);
@@ -439,7 +439,7 @@ grid on;
 close(gcf);
 
 %% 模型检验 %%
-fprintf('\n%%
+fprintf('\n%%\n');
 
 % 检验1：交叉验证
 fprintf('\n1. 5折交叉验证:\n');
@@ -474,7 +474,7 @@ for g = 1:4
     end
 end
 
-fprintf('\n%%
+fprintf('\n%%\n');
 fprintf('问题2完成!\n');
 
 %%

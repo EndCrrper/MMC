@@ -24,7 +24,7 @@ comp_labels = {'SiO_2', 'Na_2O', 'K_2O', 'CaO', 'MgO', 'Al_2O_3', ...
     'Fe_2O_3', 'CuO', 'PbO', 'BaO', 'P_2O_5', 'SrO', 'SnO_2', 'SO_2'};
 
 %% 4.1 成分关联分析 %%
-fprintf('\n%%
+fprintf('\n%%\n');
 
 % 按类型分组
 high_k_idx = T2_proc.TYPE_num == 0;
@@ -84,7 +84,7 @@ for i = 1:length(comp_names)
 end
 
 %% 4.2 差异性比较 %%
-fprintf('\n%%
+fprintf('\n%%\n');
 
 % 将相关系数矩阵的上三角部分提取为向量
 n_comp = length(comp_names);
@@ -121,7 +121,7 @@ for k = 1:min(10, length(sort_idx))
 end
 
 %% 绘图 %%
-fprintf('\n%%
+fprintf('\n%%\n');
 
 % 图4.1：Pearson相关系数热图（三合一：全部/高钾/铅钡）
 figure('Position', [100, 100, 1800, 550]);
@@ -197,7 +197,7 @@ grid on;
 close(gcf);
 
 %% 模型检验 %%
-fprintf('\n%%
+fprintf('\n%%\n');
 
 % 检验1：相关系数显著性
 fprintf('\n1. Pearson相关系数显著性检验:\n');
@@ -232,7 +232,7 @@ end
 fprintf('  GRA Bootstrap标准差: %.4f ± %.4f\n', mean(gra_variation), std(gra_variation));
 fprintf('  GRA分析结果稳定\n');
 
-fprintf('\n%%
+fprintf('\n%%\n');
 fprintf('问题4完成!\n');
 
 %%

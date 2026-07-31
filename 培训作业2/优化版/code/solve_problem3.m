@@ -42,7 +42,7 @@ comp_labels = {'SiO_2', 'Na_2O', 'K_2O', 'CaO', 'MgO', 'Al_2O_3', ...
     'Fe_2O_3', 'CuO', 'PbO', 'BaO', 'P_2O_5', 'SrO', 'SnO_2', 'SO_2'};
 
 %%
-fprintf('\n%%
+fprintf('\n%%\n');
 fprintf('方法一：决策树分类（风化/未风化分别建模）\n');
 
 % 获取表单3的风化状态
@@ -103,7 +103,7 @@ for i = 1:height(T3_proc)
 end
 
 %%
-fprintf('\n%%
+fprintf('\n%%\n');
 fprintf('方法二：PLS-DA分类\n');
 
 % PLS-DA的beta系数结构：
@@ -159,7 +159,7 @@ fprintf('\n全模型与VIP简化模型一致性: %d/%d\n', n_agree, height(T3_pr
 
 
 %%
-fprintf('\n%%
+fprintf('\n%%\n');
 fprintf('两种方法预测结果对比\n');
 
 fprintf('\n%-10s %-6s %-14s %-14s %-10s\n', ...
@@ -181,7 +181,7 @@ fprintf('\n两种方法一致率: %d/%d (%.1f%%)\n', ...
     n_consistent, height(T3_proc), 100 * n_consistent / height(T3_proc));
 
 %%
-fprintf('\n%%
+fprintf('\n%%\n');
 fprintf('敏感性分析\n');
 
 % 扰动幅度
@@ -248,7 +248,7 @@ for i = 1:height(T3_proc)
 end
 
 %%
-fprintf('\n%%
+fprintf('\n%%\n');
 fprintf('最终预测结果汇总\n');
 
 % 综合两种方法给出最终预测
@@ -306,7 +306,7 @@ prediction_results.Final_Pred = final_pred;
 prediction_results.Final_Confidence = final_confidence;
 
 %%
-fprintf('\n%%
+fprintf('\n%%\n');
 
 % 图3.1：两种方法预测概率对比
 figure('Position', [100, 100, 1200, 500]);
@@ -333,57 +333,13 @@ sgtitle('问题3：两种方法预测结果对比', 'FontSize', 14, 'FontWeight'
 print(gcf, fullfile(fig_dir, 'p3_prediction_comparison_300.png'), '-dpng', '-r300');
 close(gcf);
 
-% 图3.2：敏感性分析-稳定率
-figure('Position', [100, 100, 1000, 500]);
-
-subplot(1, 2, 1);
+% 汇总每个样本的扰动稳定性率
 tree_stable_rate = zeros(height(T3_proc), 1);
-for i = 1:height(T3_proc)
-    tree_stable_rate(i) = sum(tree_stability(i, :) == y_pred_tree(i)) / n_trials;
-end
-barh(tree_stable_rate, 'FaceColor', [0.3 0.6 0.9]);
-set(gca, 'YTick', 1:height(T3_proc), 'YTickLabel', cellstr(T3_proc.SAMPLE_ID));
-xlabel('稳定率'); xlim([0, 1]);
-title('决策树：扰动敏感性', 'FontSize', 12, 'FontWeight', 'bold');
-grid on;
-
-subplot(1, 2, 2);
 pls_stable_rate = zeros(height(T3_proc), 1);
 for i = 1:height(T3_proc)
+    tree_stable_rate(i) = sum(tree_stability(i, :) == y_pred_tree(i)) / n_trials;
     pls_stable_rate(i) = sum(pls_stability(i, :) == y_pred_pls(i)) / n_trials;
 end
-barh(pls_stable_rate, 'FaceColor', [0.9 0.4 0.3]);
-set(gca, 'YTick', 1:height(T3_proc), 'YTickLabel', cellstr(T3_proc.SAMPLE_ID));
-xlabel('稳定率'); xlim([0, 1]);
-title('PLS-DA：扰动敏感性', 'FontSize', 12, 'FontWeight', 'bold');
-grid on;
-
-sgtitle('问题3：敏感性分析（蒙特卡洛100次，δ=0.01）', 'FontSize', 14, 'FontWeight', 'bold');
-close(gcf);
-
-% 图3.3：最终预测结果
-figure('Position', [100, 100, 800, 500]);
-final_colors = zeros(height(T3_proc), 3);
-for i = 1:height(T3_proc)
-    if final_pred(i) == 0
-        final_colors(i, :) = [0.3 0.6 0.9];  % 蓝色-高钾
-    else
-        final_colors(i, :) = [0.9 0.4 0.3];  % 红色-铅钡
-    end
-end
-b3 = bar(1:height(T3_proc), final_confidence, 'FaceColor', 'flat');
-b3.CData = final_colors;
-set(gca, 'XTick', 1:height(T3_proc), 'XTickLabel', cellstr(T3_proc.SAMPLE_ID));
-ylabel('置信度'); ylim([0, 1.1]);
-title('问题3：最终预测置信度（蓝=高钾，红=铅钡）', 'FontSize', 13, 'FontWeight', 'bold');
-grid on;
-% 添加标签
-for i = 1:height(T3_proc)
-    type_name = iif(final_pred(i) == 0, '高钾', '铅钡');
-    text(i, final_confidence(i) + 0.03, type_name, ...
-        'HorizontalAlignment', 'center', 'FontSize', 10, 'FontWeight', 'bold');
-end
-close(gcf);
 
 %%
 fprintf('\n--- 保存预测结果 ---\n');
@@ -410,7 +366,7 @@ prediction_results_csv = table(T3_proc.SAMPLE_ID, weat3, ...
 writetable(prediction_results_csv, fullfile(result_dir, 'form3_predictions.csv'));
 fprintf('预测结果已保存到: %s\n', fullfile(result_dir, 'form3_predictions.csv'));
 
-fprintf('\n%%
+fprintf('\n%%\n');
 fprintf('问题3完成!\n');
 
 %%
