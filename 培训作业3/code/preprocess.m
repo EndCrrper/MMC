@@ -141,13 +141,25 @@ T_daily.Properties.VariableNames = {'date', 'item_id', 'cat_name', ...
 % 计算打折比例
 T_daily.disc_ratio = T_daily.disc_count ./ T_daily.trans_count;
 
-% 附加损耗率
+% 附加损耗率（优先单品损耗率，缺失时回退到品类平均损耗率）
 daily_loss = zeros(height(T_daily), 1);
 daily_items = cellstr(T_daily.item_id);
+daily_cats = T_daily.cat_name;
+loss_fallback_count = 0;
 for i = 1:height(T_daily)
     if item_to_loss.isKey(daily_items{i})
         daily_loss(i) = item_to_loss(daily_items{i});
+    elseif isKey(item_to_catcode, daily_items{i})
+        % 回退到品类平均损耗率
+        cat_code = item_to_catcode(daily_items{i});
+        if cat_loss_map.isKey(cat_code)
+            daily_loss(i) = cat_loss_map(cat_code);
+            loss_fallback_count = loss_fallback_count + 1;
+        end
     end
+end
+if loss_fallback_count > 0
+    fprintf('  使用品类平均损耗率回退: %d 条记录\n', loss_fallback_count);
 end
 T_daily.loss_rate = daily_loss;
 

@@ -85,10 +85,20 @@ for i = 1:n_cand
     end
 end
 
-% 计算综合评分：日利润 = 日均销量 * 售价 * 毛利率 * (1 - 损耗率)
-cand_scores.daily_profit = cand_scores.avg_daily_sales .* ...
-    cand_scores.avg_price .* cand_scores.profit_margin .* (1 - cand_scores.loss_rate);
+% 计算一致的单品日利润（与遍历使用的补货成本公式一致）
+cand_scores.replenish_test = max(cand_scores.avg_daily_sales ./ ...
+    (1 - cand_scores.loss_rate), 2.5);
+cand_scores.daily_profit = cand_scores.avg_price .* cand_scores.avg_daily_sales ...
+    - cand_scores.wholesale .* cand_scores.replenish_test;
 cand_scores.daily_profit(isnan(cand_scores.daily_profit)) = 0;
+
+% 筛除日利润为零或负的单品（无批发价数据或持续亏损品）
+valid_mask = cand_scores.daily_profit > 0;
+n_removed = sum(~valid_mask);
+if n_removed > 0
+    fprintf('  剔除%d个无利润/负利润单品\n', n_removed);
+end
+cand_scores = cand_scores(valid_mask, :);
 
 % 综合评分 = 利润 * 稳定性 * (1 - 打折率)
 cand_scores.composite_score = cand_scores.daily_profit .* ...

@@ -133,6 +133,97 @@ for j = 1:n_cats
     end
 end
 
+%% 1.6 弹性估计稳健性检验
+fprintf('\n====== 1.6 弹性估计稳健性检验 ======\n');
+
+% 保存弹性估计结果供后续使用
+elasticity_results = table();
+elasticity_results.cat_name = cat_list;
+elasticity_results.elasticity = zeros(n_cats, 1);
+elasticity_results.p_value = zeros(n_cats, 1);
+elasticity_results.R2 = zeros(n_cats, 1);
+
+for j = 1:n_cats
+    cat_mask = strcmp(T_daily.cat_name, cat_list{j});
+    cat_data = T_daily(cat_mask, :);
+    valid = cat_data.daily_sales_kg > 0 & cat_data.avg_price > 0;
+    if sum(valid) > 10
+        X = log(cat_data.avg_price(valid));
+        y = log(cat_data.daily_sales_kg(valid));
+        mdl = fitlm(X, y);
+        elasticity_results.elasticity(j) = mdl.Coefficients.Estimate(2);
+        elasticity_results.p_value(j) = mdl.Coefficients.pValue(2);
+        elasticity_results.R2(j) = mdl.Rsquared.Ordinary;
+    end
+end
+
+% --- 滚动窗口弹性估计（90天 / 180天） ---
+fprintf('\n滚动窗口弹性估计（90天 / 180天窗口）:\n');
+window_sizes = [90, 180];
+for w = 1:length(window_sizes)
+    win = window_sizes(w);
+    fprintf('  %d天窗口:\n', win);
+    for j = 1:n_cats
+        cat_mask = strcmp(T_daily.cat_name, cat_list{j});
+        cat_data = T_daily(cat_mask, :);
+        cat_data = sortrows(cat_data, 'date');
+
+        rolling_eta = [];
+        valid_win = cat_data.daily_sales_kg > 0 & cat_data.avg_price > 0;
+        n_valid = sum(valid_win);
+        if n_valid > win
+            for t = win:n_valid
+                idx = find(valid_win);
+                win_idx = idx(max(1, t-win+1):t);
+                win_idx = win_idx(valid_win(win_idx));
+                if length(win_idx) > win/2
+                    Xw = log(cat_data.avg_price(win_idx));
+                    yw = log(cat_data.daily_sales_kg(win_idx));
+                    if length(Xw) > 10
+                        mdl_w = fitlm(Xw, yw);
+                        rolling_eta = [rolling_eta; mdl_w.Coefficients.Estimate(2)];
+                    end
+                end
+            end
+        end
+        if ~isempty(rolling_eta)
+            fprintf('    %s: 均值=%.3f, 标准差=%.3f, 范围=[%.3f, %.3f]\n', ...
+                char(cat_list(j)), mean(rolling_eta), std(rolling_eta), ...
+                min(rolling_eta), max(rolling_eta));
+        end
+    end
+end
+
+% --- Bootstrap重采样（200次） ---
+fprintf('\nBootstrap 200次重采样（95%%置信区间）:\n');
+n_bootstrap = 200;
+rng(42);  % 固定随机种子保证可复现
+for j = 1:n_cats
+    cat_mask = strcmp(T_daily.cat_name, cat_list{j});
+    cat_data = T_daily(cat_mask, :);
+    valid = cat_data.daily_sales_kg > 0 & cat_data.avg_price > 0;
+    X_full = log(cat_data.avg_price(valid));
+    y_full = log(cat_data.daily_sales_kg(valid));
+    n_obs = length(X_full);
+
+    boot_eta = zeros(n_bootstrap, 1);
+    for b = 1:n_bootstrap
+        boot_idx = randi(n_obs, n_obs, 1);
+        X_boot = X_full(boot_idx);
+        y_boot = y_full(boot_idx);
+        mdl_boot = fitlm(X_boot, y_boot);
+        boot_eta(b) = mdl_boot.Coefficients.Estimate(2);
+    end
+    ci_low = prctile(boot_eta, 2.5);
+    ci_high = prctile(boot_eta, 97.5);
+    fprintf('  %s: 估计值=%.3f, 95%%CI=[%.3f, %.3f], SE=%.3f\n', ...
+        char(cat_list(j)), elasticity_results.elasticity(j), ...
+        ci_low, ci_high, std(boot_eta));
+end
+
+% 保存弹性结果
+save(fullfile(result_dir, 'elasticity_results.mat'), 'elasticity_results');
+
 %% 绘图
 fprintf('\n====== 生成图表 ======\n');
 

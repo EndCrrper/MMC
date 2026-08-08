@@ -1,0 +1,126 @@
+===CATEGORY_ORDER===
+cat1: 水生根茎类
+cat2: 花叶类
+cat3: 花菜类
+cat4: 茄类
+cat5: 辣椒类
+cat6: 食用菌
+
+===P1_CAT_SALES===
+Rank 1: 花叶类 total=198521.0 (42.2%), items=99
+Rank 2: 辣椒类 total=91588.6 (19.4%), items=43
+Rank 3: 食用菌 total=76086.7 (16.2%), items=71
+Rank 4: 花菜类 total=41766.5 (8.9%), items=5
+Rank 5: 水生根茎类 total=40581.4 (8.6%), items=18
+Rank 6: 茄类 total=22431.8 (4.8%), items=10
+TOTAL: 470975.9 kg
+
+===P1_CONCENTRATION===
+Top-5: 25.0%
+Top-10: 39.1%
+Top-20: 57.2%
+Top-50: 84.4%
+Top-100: 97.0%
+
+===P1_DOW===
+Sun: mean=12.3 std=16.1
+Mon: mean=9.3 std=13.5
+Tue: mean=8.8 std=12.0
+Wed: mean=9.0 std=12.2
+Thu: mean=8.7 std=12.1
+Fri: mean=9.8 std=14.0
+Sat: mean=12.6 std=17.2
+
+===P1_ELASTICITY===
+水生根茎类: eta=-1.242 p=0.0000 R2=0.2369
+花叶类: eta=-0.864 p=0.0000 R2=0.1939
+花菜类: eta=-0.116 p=0.0408 R2=0.0022
+茄类: eta=-0.730 p=0.0000 R2=0.0640
+辣椒类: eta=-0.977 p=0.0000 R2=0.2405
+食用菌: eta=-0.399 p=0.0000 R2=0.0568
+
+===P2_PRICING===
+水生根茎类: W=8.93 Mhist=57.4% eta=-1.242 Popt=17.63 Mopt=97% avgRepl=14.8 wkProfit=718.2
+花叶类: W=4.15 Mhist=77.0% eta=-0.864 Popt=9.01 Mopt=117% avgRepl=140.4 wkProfit=3888.0
+花菜类: W=5.96 Mhist=57.3% eta=-0.116 Popt=11.76 Mopt=97% avgRepl=18.5 wkProfit=599.4
+茄类: W=5.77 Mhist=64.9% eta=-0.730 Popt=11.83 Mopt=105% avgRepl=23.7 wkProfit=810.0
+辣椒类: W=6.49 Mhist=90.5% eta=-0.977 Popt=14.96 Mopt=130% avgRepl=82.8 wkProfit=4039.3
+食用菌: W=4.74 Mhist=68.4% eta=-0.399 Popt=9.88 Mopt=108% avgRepl=56.0 wkProfit=1626.2
+Total weekly profit: 11681.1
+
+===P2_PRED_PARAMS===
+
+===P1_CONCENTRATION===
+Top-5: 25.0%
+Top-10: 39.1%
+Top-20: 57.2%
+Top-50: 84.4%
+Top-100: 97.0%
+
+===P1_DOW===
+Sun: mean=12.3 std=16.1
+Mon: mean=9.3 std=13.5
+Tue: mean=8.8 std=12.0
+Wed: mean=9.0 std=12.2
+Thu: mean=8.7 std=12.1
+Fri: mean=9.8 std=14.0
+Sat: mean=12.6 std=17.2
+
+===P1_ELASTICITY===
+水生根茎类: eta=-1.242 p=0.0000 R2=0.2369
+花叶类: eta=-0.864 p=0.0000 R2=0.1939
+花菜类: eta=-0.116 p=0.0408 R2=0.0022
+茄类: eta=-0.730 p=0.0000 R2=0.0640
+辣椒类: eta=-0.977 p=0.0000 R2=0.2405
+食用菌: eta=-0.399 p=0.0000 R2=0.0568
+
+===P2_PRICING===
+水生根茎类: W=8.93 Mhist=57.4% eta=-1.242 Popt=17.63 Mopt=97% avgRepl=14.8 wkProfit=718.2
+花叶类: W=4.15 Mhist=77.0% eta=-0.864 Popt=9.01 Mopt=117% avgRepl=140.4 wkProfit=3888.0
+花菜类: W=5.96 Mhist=57.3% eta=-0.116 Popt=11.76 Mopt=97% avgRepl=18.5 wkProfit=599.4
+茄类: W=5.77 Mhist=64.9% eta=-0.730 Popt=11.83 Mopt=105% avgRepl=23.7 wkProfit=810.0
+辣椒类: W=6.49 Mhist=90.5% eta=-0.977 Popt=14.96 Mopt=130% avgRepl=82.8 wkProfit=4039.3
+食用菌: W=4.74 Mhist=68.4% eta=-0.399 Popt=9.88 Mopt=108% avgRepl=56.0 wkProfit=1626.2
+Total weekly profit: 11681.1
+
+===P2_PRED_PARAMS===
+水生根茎类: base4w=17.6 dow=0.82-1.33 loss=0.0%
+花叶类: base4w=150.7 dow=0.87-1.24 loss=0.0%
+花菜类: base4w=17.1 dow=0.85-1.28 loss=0.0%
+茄类: base4w=25.0 dow=0.84-1.26 loss=0.0%
+辣椒类: base4w=89.8 dow=0.87-1.25 loss=0.0%
+食用菌: base4w=54.8 dow=0.85-1.27 loss=0.0%
+
+===P2_DAILY_PRED===
+水生根茎类: 17.8 16.7 11.6 11.4 11.3 10.9 13.4
+花叶类: 161.4 152.7 115.7 110.3 112.7 110.2 121.3
+花菜类: 21.2 21.1 14.9 14.4 14.6 14.2 16.4
+茄类: 26.9 26.8 19.7 18.2 18.6 18.4 21.1
+辣椒类: 95.6 90.7 66.0 64.1 64.3 64.6 76.2
+食用菌: 66.6 62.7 43.3 40.6 44.6 43.5 51.2
+===DAILY_TOTAL===
+7/1: 389.5
+7/2: 370.7
+7/3: 271.2
+7/4: 259.0
+7/5: 266.1
+7/6: 261.8
+7/7: 299.6
+
+===P3_N===
+N=27: 659.2
+N=28: 663.0
+N=29: 666.6
+N=30: 670.3
+N=31: 672.3
+N=32: 674.1
+N=33: 675.5
+
+===P3_CAT_DIST===
+水生根茎类: n=3 sales=11.1 replen=11.5 profit=70.5
+花叶类: n=14 sales=111.8 replen=113.4 profit=240.6
+花菜类: n=2 sales=18.9 replen=18.9 profit=123.7
+茄类: n=3 sales=18.2 replen=18.2 profit=24.4
+辣椒类: n=7 sales=62.0 replen=62.8 profit=146.5
+食用菌: n=4 sales=27.5 replen=27.5 profit=69.8
+Total: N=33 profit=675.5

@@ -27,6 +27,7 @@ pred_results.date = pred_dates;
 pred_results.day_of_week = weekday(pred_dates);
 
 % 对每个品类建模
+pred_cat_map = cell(1, n_cats);
 for c = 1:n_cats
     cat_name = char(cat_list(c));
     cat_mask = strcmp(T_cat_daily.cat_name, cat_name);
@@ -73,9 +74,10 @@ for c = 1:n_cats
         pred_sales(d) = max(pred_sales(d), 0);  % 不能为负
     end
 
-    % 存储
-    col_name = matlab.lang.makeValidName(['pred_' cat_name]);
+    % 存储（使用品类索引避免中文列名冲突）
+    col_name = sprintf('pred_cat%d', c);
     pred_results.(col_name) = pred_sales;
+    pred_cat_map{c} = col_name;  % 列名映射
 
     fprintf('  %s: 近4周日均=%.1f kg, 周系数范围=%.2f-%.2f\n', ...
         cat_name, base_daily, min(dow_factor), max(dow_factor));
@@ -159,8 +161,7 @@ opt_results.opt_replenish = zeros(n_cats, n_pred);
 opt_results.opt_profit = zeros(n_cats, 1);
 
 for c = 1:n_cats
-    col_name = matlab.lang.makeValidName(['pred_' char(cat_list(c))]);
-    pred_sales_vec = pred_results.(col_name);
+    pred_sales_vec = pred_results.(pred_cat_map{c});
 
     wp = cat_pricing.avg_wholesale{c};
     elasticity = cat_pricing.elasticity{c};
@@ -170,8 +171,11 @@ for c = 1:n_cats
     current_markup = cat_pricing.avg_markup{c};
     current_price = wp * (1 + current_markup);
 
-    % 网格搜索最优加价率 [0.05, 1.5]
-    markup_grid = 0.05:0.01:1.5;
+    % 网格搜索最优加价率（品类特化搜索区间）
+    % 以历史加价率为中心 ±40pp，限制在 [0.05, 1.50]
+    markup_lower = max(0.05, current_markup - 0.40);
+    markup_upper = min(1.50, current_markup + 0.40);
+    markup_grid = markup_lower:0.005:markup_upper;
     best_profit = -inf;
     best_markup = current_markup;
 
@@ -197,6 +201,14 @@ for c = 1:n_cats
         end
     end
 
+    % 判断是否触及搜索边界并记录
+    hit_boundary = (best_markup <= markup_lower + 1e-6) || ...
+                   (best_markup >= markup_upper - 1e-6);
+    if hit_boundary
+        fprintf('    [搜索触及边界: %.1f%%-%.1f%%]\n', ...
+            markup_lower*100, markup_upper*100);
+    end
+
     best_price = wp * (1 + best_markup);
     price_ratio_final = best_price / current_price;
 
@@ -218,14 +230,15 @@ end
 fprintf('\n====== 2.4 预测汇总 (2023/7/1-7/7) ======\n');
 
 pred_table = table(pred_dates);
-pred_table.day_name = weekday(pred_dates, 'short');
+[~, day_names] = weekday(pred_dates, 'short');
+pred_table.day_name = day_names;
 for c = 1:n_cats
-    col_s = matlab.lang.makeValidName(['sales_' char(cat_list(c))]);
-    col_r = matlab.lang.makeValidName(['replenish_' char(cat_list(c))]);
+    col_s = sprintf('sales_cat%d', c);
+    col_r = sprintf('repl_cat%d', c);
 
     price_ratio = opt_results.opt_price(c) / (cat_pricing.avg_wholesale{c} * ...
         (1 + cat_pricing.avg_markup{c}));
-    adj_sales = pred_results.(matlab.lang.makeValidName(['pred_' char(cat_list(c))])) ...
+    adj_sales = pred_results.(pred_cat_map{c}) ...
         .* (price_ratio .^ cat_pricing.elasticity{c});
 
     pred_table.(col_s) = round(adj_sales, 1);
@@ -242,8 +255,7 @@ figure('Position', [100, 100, 1200, 500]);
 colors = lines(n_cats);
 hold on;
 for c = 1:n_cats
-    col_name = matlab.lang.makeValidName(['pred_' char(cat_list(c))]);
-    plot(pred_dates, pred_results.(col_name), 'o-', 'Color', colors(c,:), ...
+    plot(pred_dates, pred_results.(pred_cat_map{c}), 'o-', 'Color', colors(c,:), ...
         'LineWidth', 1.5, 'DisplayName', char(cat_list(c)));
 end
 xlabel('日期'); ylabel('预测日销量 (kg)');
