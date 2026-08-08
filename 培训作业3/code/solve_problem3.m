@@ -8,9 +8,7 @@ base_dir = fileparts(mfilename('fullpath'));
 result_dir = fullfile(base_dir, '..', 'result');
 fig_dir = fullfile(result_dir, 'figures');
 load(fullfile(result_dir, 'preprocessed_data.mat'), ...
-    'T1', 'T_daily', 'T3', 'T4_item', 'cats');
-load(fullfile(result_dir, 'problem2_results.mat'), ...
-    'pred_results', 'cat_pricing', 'loss_rates');
+    'T1', 'T_daily', 'T4_item', 'cats');
 fprintf('数据已加载\n');
 
 %% 3.1 筛选候选商品（6月24-30日有销售记录的单品）

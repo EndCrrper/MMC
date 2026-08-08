@@ -87,7 +87,7 @@ end
 %% 六、按日期+单品汇总日销售数据
 fprintf('\n--- 六、汇总日销售数据 ---\n');
 
-% 使用 groupsummary 高效汇总
+% 批量附加品类和损耗率信息
 T2.cat_name = repmat({''}, height(T2), 1);
 T2.loss_rate = zeros(height(T2), 1);
 
@@ -144,7 +144,6 @@ T_daily.disc_ratio = T_daily.disc_count ./ T_daily.trans_count;
 % 附加损耗率（优先单品损耗率，缺失时回退到品类平均损耗率）
 daily_loss = zeros(height(T_daily), 1);
 daily_items = cellstr(T_daily.item_id);
-daily_cats = T_daily.cat_name;
 loss_fallback_count = 0;
 for i = 1:height(T_daily)
     if item_to_loss.isKey(daily_items{i})
@@ -196,7 +195,7 @@ for i = 1:height(T_daily)
     end
 end
 
-% 对无批发价的记录（约占10%-20%），用同单品最近日期的批发价填充
+% 统计批发价缺失情况（实际数据覆盖完整，缺失率约0%）
 no_wp = T_daily.wholesale_price == 0;
 fprintf('无批发价记录: %d/%d (%.1f%%)\n', sum(no_wp), height(T_daily), ...
     100*sum(no_wp)/height(T_daily));

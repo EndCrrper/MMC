@@ -255,7 +255,7 @@ figure('Position', [100, 100, 1200, 500]);
 colors = lines(n_cats);
 hold on;
 for c = 1:n_cats
-    plot(pred_dates, pred_results.(pred_cat_map{c}), 'o-', 'Color', colors(c,:), ...
+    plot(pred_dates, pred_table.(sprintf('sales_cat%d', c)), 'o-', 'Color', colors(c,:), ...
         'LineWidth', 1.5, 'DisplayName', char(cat_list(c)));
 end
 xlabel('日期'); ylabel('预测日销量 (kg)');

@@ -4,7 +4,9 @@
 
 %% 初始化
 clc;
+prev_fig_visible = get(0, 'DefaultFigureVisible');
 set(0, 'DefaultFigureVisible', 'off');
+cleanup_obj = onCleanup(@() set(0, 'DefaultFigureVisible', prev_fig_visible));
 
 base_dir = fileparts(mfilename('fullpath'));
 result_dir = fullfile(base_dir, '..', 'result');
