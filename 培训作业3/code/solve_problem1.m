@@ -228,15 +228,17 @@ save(fullfile(result_dir, 'elasticity_results.mat'), 'elasticity_results');
 fprintf('\n====== 生成图表 ======\n');
 
 % 图1.1：品类总销量柱状图
-figure('Position', [100, 100, 1000, 500]);
+figure('Position', [100, 100, 1200, 550]);
 bar(cat_total_sorted / 1000, 'FaceColor', [0.3 0.6 0.9]);
 set(gca, 'XTickLabel', cat_names_sorted, 'XTickLabelRotation', 30);
-ylabel('总销量 (吨)'); title('问题1.1：各品类总销量排名', 'FontSize', 14, 'FontWeight', 'bold');
+ylabel('总销量 (吨)', 'FontSize', 14);
+title('问题1.1：各品类总销量排名', 'FontSize', 16, 'FontWeight', 'bold');
+set(gca, 'FontSize', 13);
 grid on;
 for i = 1:length(cat_total_sorted)
     text(i, cat_total_sorted(i)/1000 + 0.5, sprintf('%.1f%%', ...
         100*cat_total_sorted(i)/sum(cat_total)), ...
-        'HorizontalAlignment', 'center', 'FontSize', 9);
+        'HorizontalAlignment', 'center', 'FontSize', 12, 'FontWeight', 'bold');
 end
 print(gcf, fullfile(fig_dir, 'p1_cat_sales_300.png'), '-dpng', '-r300');
 close(gcf);
@@ -247,9 +249,11 @@ n_items = length(item_total_sorted);
 plot((1:n_items)/n_items*100, cumsum_pct, 'b-', 'LineWidth', 2);
 hold on;
 plot([0 100], [0 100], 'k--');
-xlabel('单品累计占比 (%)'); ylabel('销量累计占比 (%)');
-title('问题1.2：单品销量集中度曲线', 'FontSize', 14, 'FontWeight', 'bold');
-legend('实际分布', '完全均匀', 'Location', 'southeast');
+xlabel('单品累计占比 (%)', 'FontSize', 14);
+ylabel('销量累计占比 (%)', 'FontSize', 14);
+title('问题1.2：单品销量集中度曲线', 'FontSize', 16, 'FontWeight', 'bold');
+set(gca, 'FontSize', 13);
+legend('实际分布', '完全均匀', 'Location', 'southeast', 'FontSize', 12);
 grid on;
 print(gcf, fullfile(fig_dir, 'p1_concentration_300.png'), '-dpng', '-r300');
 close(gcf);
@@ -260,7 +264,8 @@ imagesc(R_cat); colormap(jet); colorbar; clim([-1, 1]);
 set(gca, 'XTick', 1:n_cats, 'XTickLabel', cat_list, 'XTickLabelRotation', 30);
 set(gca, 'YTick', 1:n_cats, 'YTickLabel', cat_list);
 axis square;
-title('问题1.4：品类间销量相关系数', 'FontSize', 14, 'FontWeight', 'bold');
+set(gca, 'FontSize', 13);
+title('问题1.4：品类间销量相关系数', 'FontSize', 16, 'FontWeight', 'bold');
 print(gcf, fullfile(fig_dir, 'p1_corr_heatmap_300.png'), '-dpng', '-r300');
 close(gcf);
 
@@ -270,8 +275,10 @@ months_dt = datetime(monthly_sales.year, monthly_sales.month, 1);
 [~, mo_sort] = sort(months_dt);
 plot(months_dt(mo_sort), monthly_sales.sum_daily_sales_kg(mo_sort)/1000, ...
     'b-o', 'LineWidth', 1.5);
-xlabel('月份'); ylabel('月总销量 (吨)');
-title('问题1.3：月度总销量趋势', 'FontSize', 14, 'FontWeight', 'bold');
+xlabel('月份', 'FontSize', 14);
+ylabel('月总销量 (吨)', 'FontSize', 14);
+title('问题1.3：月度总销量趋势', 'FontSize', 16, 'FontWeight', 'bold');
+set(gca, 'FontSize', 13);
 grid on;
 print(gcf, fullfile(fig_dir, 'p1_monthly_trend_300.png'), '-dpng', '-r300');
 close(gcf);
