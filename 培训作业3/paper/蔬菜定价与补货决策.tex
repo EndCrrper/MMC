@@ -192,17 +192,17 @@ $x_j$ & -- & 单品$j$是否入选（0/1） & 选品决策变量 \\
 \begin{tikzpicture}[
     >=Stealth,
     databox/.style={rectangle, rounded corners=3pt, draw=cyan!70!black, fill=cyan!4,
-        minimum width=3.2cm, minimum height=0.7cm, align=center, font=\footnotesize},
+        minimum width=3.4cm, minimum height=0.7cm, align=center, font=\footnotesize},
     prepbox/.style={rectangle, rounded corners=4pt, draw=teal!70!black, fill=teal!4, line width=0.8pt,
-        minimum width=14.5cm, minimum height=0.7cm, align=center, font=\small\bfseries},
+        minimum width=15.0cm, minimum height=0.7cm, align=center, font=\small\bfseries},
     ptitle/.style={rectangle, rounded corners=3pt, draw=orange!85!black, fill=orange!6,
-        minimum width=3.0cm, minimum height=0.6cm, align=center, font=\footnotesize\bfseries},
+        minimum width=3.4cm, minimum height=0.6cm, align=center, font=\footnotesize\bfseries},
     mbox/.style={rectangle, rounded corners=2pt, draw=gray!40, fill=gray!3,
-        minimum width=3.0cm, minimum height=1.2cm, align=center, font=\scriptsize},
+        minimum width=3.4cm, minimum height=1.2cm, align=center, font=\scriptsize},
     rbox/.style={rectangle, rounded corners=2pt, draw=purple!60!black, fill=purple!4,
-        minimum width=3.0cm, minimum height=0.55cm, align=center, font=\scriptsize\bfseries},
+        minimum width=3.4cm, minimum height=0.55cm, align=center, font=\fontsize{6}{7}\selectfont\bfseries},
     synbox/.style={rectangle, rounded corners=4pt, draw=red!65!black, fill=red!4, line width=0.8pt,
-        minimum width=14.5cm, minimum height=0.7cm, align=center, font=\small\bfseries},
+        minimum width=15.0cm, minimum height=0.7cm, align=center, font=\small\bfseries},
     arr/.style={->, >=Stealth, thick, draw=gray!45},
 ]
 \node[databox] (f1) at (0,0) {附件1\\252单品信息};
@@ -217,7 +217,7 @@ $x_j$ & -- & 单品$j$是否入选（0/1） & 选品决策变量 \\
 \draw[arr] (f3.south) -- ++(0,-0.25) -| (prep.north);
 \draw[arr] (f4.south) -- ++(0,-0.25) -| (prep.north);
 
-\node[ptitle, below=1.0cm of prep, xshift=-5.2cm] (p1) {问题1：分布与关联};
+\node[ptitle, below=1.0cm of prep, xshift=-5.7cm] (p1) {问题1：分布与关联};
 \node[ptitle, right=0.4cm of p1] (p2) {问题2：预测与定价};
 \node[ptitle, right=0.4cm of p2] (p3) {问题3：选品优化};
 \node[ptitle, right=0.4cm of p3] (p4) {问题4：数据建议};
@@ -235,10 +235,10 @@ $x_j$ & -- & 单品$j$是否入选（0/1） & 选品决策变量 \\
 \draw[arr] (p1) -- (m1); \draw[arr] (p2) -- (m2);
 \draw[arr] (p3) -- (m3); \draw[arr] (p4) -- (m4);
 
-\node[rbox, below=0.35cm of m1] (r1) {集中度57\%/84\%  弹性-0.1$\sim$-1.2};
-\node[rbox, below=0.35cm of m2] (r2) {周利润11,681元  日补货336kg};
-\node[rbox, below=0.35cm of m3] (r3) {33单品  全覆盖  日利润676元};
-\node[rbox, below=0.35cm of m4] (r4) {三级9项建议  边际贡献排序};
+\node[rbox, below=0.35cm of m1] (r1) {集中度57\%/84\% \\ 弹性$-0.1\sim-1.2$};
+\node[rbox, below=0.35cm of m2] (r2) {周利润11,681元 \\ 日补货336 kg};
+\node[rbox, below=0.35cm of m3] (r3) {33单品  全覆盖 \\ 日利润676元};
+\node[rbox, below=0.35cm of m4] (r4) {三级9项采集建议 \\ 边际贡献排序};
 
 \draw[arr] (m1) -- (r1); \draw[arr] (m2) -- (r2);
 \draw[arr] (m3) -- (r3); \draw[arr] (m4) -- (r4);
