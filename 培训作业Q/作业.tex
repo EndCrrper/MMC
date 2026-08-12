@@ -1,0 +1,555 @@
+\documentclass[12pt,a4paper]{ctexart}
+\usepackage[top=2.2cm, bottom=2.2cm, left=2.2cm, right=2.2cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+\lstset{
+    basicstyle=\footnotesize\ttfamily,
+    numbers=left, numberstyle=\tiny\color{gray},
+    frame=single, backgroundcolor=\color{gray!5},
+    breaklines=true, language=Matlab,
+    keywordstyle=\color{blue}, commentstyle=\color{green!50!black},
+}
+\hypersetup{colorlinks=true, linkcolor=black, citecolor=black, urlcolor=black}
+\captionsetup{font=small, labelfont=bf}
+\pagestyle{fancy}\fancyhf{}\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0pt}
+
+\title{\vspace{-2cm}\textbf{数学建模暑期培训 —— 算法学习笔记与论文写作模板}}
+\author{队伍成员：\quad 日期：2026年8月12日}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+\tableofcontents
+\newpage
+
+% ============================================================
+\section{算法学习笔记}
+% ============================================================
+
+本阶段对照思维导图，重点学习了\textbf{12种}覆盖数据预处理、统计分析、分类预测、优化求解四大类别的算法和模型。以下逐一记录每个算法的基本原理、数学推导、MATLAB/Python代码实现、适用场景及优缺点。
+
+% ----------
+\subsection{数据预处理类}
+
+\subsubsection{1. KNN缺失值填充}
+
+\textbf{基本原理：}K近邻（K-Nearest Neighbors）缺失值填充利用样本间的相似性来估计缺失值。对于含有缺失值的样本，在完整数据中找到与其最相似的$K$个邻居，用邻居的加权均值（连续变量）或众数（分类变量）填充缺失位置。相似性通常用欧氏距离度量：
+
+\begin{equation}
+d(\mathbf{x}_a, \mathbf{x}_b) = \sqrt{\sum_{j \in \mathcal{C}} (x_{aj} - x_{bj})^2}
+\end{equation}
+
+其中$\mathcal{C}$为两个样本均不含缺失值的特征集合。
+
+\textbf{算法步骤：}
+\begin{enumerate}[label=(\arabic*), leftmargin=*]
+    \item 找到含有缺失值的目标样本$\mathbf{x}_{\text{miss}}$；
+    \item 在所有完整样本中，仅使用$\mathbf{x}_{\text{miss}}$不含缺失的特征列计算距离；
+    \item 选出距离最小的$K$个邻居样本；
+    \item 若缺失值为连续变量，取$K$个邻居该列值的（距离加权）均值填充；若为分类变量，取众数填充；
+    \item 对所有含缺失样本重复以上步骤。
+\end{enumerate}
+
+\textbf{适用问题：}任意含缺失值的表格型数据集，尤其适合变量间存在较强相关性的场景（如化学成分数据、经济指标数据）。$K$通常取3--10。
+
+\textbf{优缺点：}
+\begin{itemize}[leftmargin=*]
+    \item[+] 充分利用样本间信息，比均值填充更精确；对非线性关系也有效（与距离相关而非线性相关）。
+    \item[$-$] 计算量较大（需计算所有样本对距离），高维数据受"维度灾难"影响；$K$值需调参。
+\end{itemize}
+
+\textbf{代码（MATLAB）：}
+\begin{lstlisting}
+function Xfill = knn_fill(X, K)
+    [n, p] = size(X);
+    Xfill = X;
+    for i = 1:n
+        miss = find(isnan(X(i,:)));
+        if isempty(miss), continue; end
+        full = find(all(~isnan(X), 2));
+        obs = setdiff(1:p, miss);
+        d = sqrt(sum((X(full,obs) - X(i,obs)).^2, 2));
+        [~, id] = sort(d);
+        nb = full(id(1:min(K,length(id))));
+        Xfill(i, miss) = mean(X(nb, miss), 'omitnan');
+    end
+end
+\end{lstlisting}
+
+\subsubsection{2. 3$\sigma$准则异常值检测}
+
+\textbf{基本原理：}假设数据服从正态分布$N(\mu, \sigma^2)$，则约99.73\%的数据落在$[\mu-3\sigma, \mu+3\sigma]$区间内。超出此范围的值被视为异常值。实际应用中，用样本均值$\bar{x}$和样本标准差$s$替代总体参数：
+
+\begin{equation}
+\text{异常值} = \{x_i \mid |x_i - \bar{x}| > 3s\}
+\end{equation}
+
+\textbf{算法步骤：}
+\begin{enumerate}[label=(\arabic*), leftmargin=*]
+    \item 计算每个特征的均值$\bar{x}_j$和标准差$s_j$；
+    \item 对每个样本的每个特征，若$|x_{ij} - \bar{x}_j| > 3s_j$，标记为异常；
+    \item 异常值的处理方式：删除、替换为边界值（Winsorize）或用均值/中位数填充。
+\end{enumerate}
+
+\textbf{适用问题：}在培训作业2中用于检测14个玻璃样本的化学成分是否含异常高值——经检验所有指标均在3$\sigma$范围内，无需剔除。该方法的典型场景还包括传感器数据的毛刺去除和财务指标的高杠杆值识别。
+
+\textbf{优缺点：}
+\begin{itemize}[leftmargin=*]
+    \item[+] 简单直观，计算复杂度$O(n)$；对正态数据效果好。
+    \item[$-$] 对非正态分布数据（如幂律分布、长尾分布）效果差，会误判正常值为异常；仅检测单变量，不考虑变量间的联合分布异常。
+\end{itemize}
+
+\textbf{代码（MATLAB）：}
+\begin{lstlisting}
+function [flag, Xclean] = find_outlier_3s(X)
+    m = mean(X, 1, 'omitnan');
+    s = std(X, 0, 1, 'omitnan');
+    flag = abs(X - m) > 3 * s;
+    Xclean = X;
+    for j = 1:size(X, 2)
+        Xclean(flag(:,j), j) = m(j);
+    end
+end
+\end{lstlisting}
+
+% ----------
+\subsection{统计分析类}
+
+\subsubsection{3. 主成分分析（PCA）}
+
+\textbf{基本原理：}PCA通过正交变换将原始$p$个可能相关的变量转化为$p$个线性无关的主成分，并按方差从大到小排列。前$k$个主成分保留了原始数据的绝大部分方差信息，从而实现降维。数学上，PCA等价于对协方差矩阵进行特征分解：
+
+\begin{equation}
+\Sigma = \frac{1}{n-1} \mathbf{X}^T \mathbf{X} = \mathbf{V} \Lambda \mathbf{V}^T
+\end{equation}
+
+其中$\Lambda = \text{diag}(\lambda_1, \dots, \lambda_p)$为特征值矩阵（$\lambda_1 \ge \lambda_2 \ge \dots$），$\mathbf{V}$的列向量为对应的特征向量（主成分方向）。第$k$个主成分的方差贡献率为$\lambda_k / \sum \lambda_j$。
+
+\textbf{算法步骤：}
+\begin{enumerate}[label=(\arabic*), leftmargin=*]
+    \item 将数据标准化（每列减去均值，除以标准差）；
+    \item 计算标准化数据的协方差矩阵；
+    \item 对协方差矩阵进行特征值分解；
+    \item 按特征值从大到小排序，计算累计方差贡献率，确定保留的主成分数$k$；
+    \item 取前$k$个特征向量构成投影矩阵$\mathbf{V}_k$，$\mathbf{Z} = \mathbf{X}\mathbf{V}_k$即为降维后的数据。
+\end{enumerate}
+
+\textbf{适用问题：}高维数据降维与可视化（如基因表达数据、光谱数据）；多重共线性处理；特征提取用于后续建模。
+
+\textbf{优缺点：}
+\begin{itemize}[leftmargin=*]
+    \item[+] 无监督，无需标签；可解释性强（特征向量有明确含义）；计算效率高（$O(\min(n,p)^3)$）。
+    \item[$-$] 仅能提取线性结构（非线性场景需用核PCA或t-SNE）；对尺度敏感（必须先标准化）；主成分的实际含义有时难以解释。
+\end{itemize}
+
+\textbf{代码（MATLAB）：}
+\begin{lstlisting}
+function [score, loadings, var_exp] = do_pca(X, k)
+    Z = (X - mean(X)) ./ std(X);
+    C = Z' * Z / (size(Z,1) - 1);
+    [loadings, D] = eig(C);
+    [ev, id] = sort(diag(D), 'descend');
+    loadings = loadings(:, id);
+    var_exp = ev / sum(ev) * 100;
+    score = Z * loadings(:, 1:k);
+end
+\end{lstlisting}
+
+\subsubsection{4. 灰色关联分析（GRA）}
+
+\textbf{基本原理：}灰色关联分析通过比较参考序列与比较序列之间的几何相似程度（曲线形状的接近程度）来判断它们之间的关联强度。关联度$\gamma$越大，说明序列间的关联越紧密。核心公式：
+
+\begin{align}
+\xi_i(k) &= \frac{\min_i \min_k |x_0(k)-x_i(k)| + \rho \max_i \max_k |x_0(k)-x_i(k)|}
+                 {|x_0(k)-x_i(k)| + \rho \max_i \max_k |x_0(k)-x_i(k)|} \\
+\gamma_i  &= \frac{1}{m} \sum_{k=1}^{m} \xi_i(k)
+\end{align}
+
+其中$x_0$为参考序列，$x_i$为比较序列，$\rho \in (0,1)$为分辨系数（通常取0.5），$\xi_i(k)$为关联系数，$\gamma_i$为关联度。
+
+\textbf{适用问题：}在培训作业2中用于分析14种化学成分与玻璃风化程度的关联强度——当时同时计算了Pearson相关系数和灰色关联度，发现两种方法排序结果大体一致但在低相关区间存在差异。灰色关联分析在样本量较小（14个样本、11个变量）且无法假设联合分布的化学数据场景中表现出色。
+
+\textbf{优缺点：}
+\begin{itemize}[leftmargin=*]
+    \item[+] 小样本条件下仍可给出有参考价值的排序；无需假设数据分布类型；结果$\gamma \in [0,1]$直接表示关联强度，便于横向比较。
+    \item[$-$] $\rho$的选取（通常取0.5）在极端情况下对排序有微弱影响；均值化、初值化等无量纲方式的选择会影响最终关联系数值；当变量间存在强非线性关系时可能低估关联度。
+\end{itemize}
+
+\textbf{代码（MATLAB）：}
+\begin{lstlisting}
+function r = grey_degree(Y0, Y, rho)
+    A = [Y0, Y];
+    A = A ./ mean(A);
+    ref = A(:, 1);  cmp = A(:, 2:end);
+    d = abs(ref - cmp);
+    M = rho * max(d, [], 'all');
+    m = min(d, [], 'all');
+    ksi = (m + M) ./ (d + M);
+    r = mean(ksi)';
+end
+\end{lstlisting}
+
+% ----------
+\subsection{评价决策类}
+
+\subsubsection{5. 熵权法}
+
+\textbf{基本原理：}熵权法基于信息熵理论进行客观赋权。信息熵衡量指标数据的离散程度：离散程度越大（即该指标在各方案间差异越大），信息量越大，权重越高。第$j$个指标的熵值：
+
+\begin{equation}
+e_j = -\frac{1}{\ln n} \sum_{i=1}^n p_{ij} \ln p_{ij}, \quad
+p_{ij} = \frac{x_{ij}}{\sum_{i=1}^n x_{ij}}
+\end{equation}
+
+第$j$个指标的权重：$w_j = (1 - e_j) / \sum_{k=1}^m (1 - e_k)$。
+
+\textbf{算法步骤：}
+\begin{enumerate}[label=(\arabic*), leftmargin=*]
+    \item 构建$n$个方案$\times m$个指标的原始矩阵$\mathbf{X}$；
+    \item 对$\mathbf{X}$进行标准化（正向指标和负向指标分别处理）；
+    \item 计算每个指标下各方案的比重$p_{ij}$；
+    \item 计算各指标的熵值$e_j$和信息效用值$d_j = 1 - e_j$；
+    \item 归一化得各指标权重$w_j$。
+\end{enumerate}
+
+\textbf{适用问题：}多指标综合评价中的客观赋权，常与TOPSIS、灰色综合评价等方法组合使用。
+
+\textbf{优缺点：}
+\begin{itemize}[leftmargin=*]
+    \item[+] 完全客观，无主观因素；基于数据本身的信息量赋权，有信息论基础。
+    \item[$-$] 对极端值和零值敏感（需预处理）；不考虑指标间的相关性（冗余指标会被重复赋权）；无法反映决策者的主观偏好。
+\end{itemize}
+
+\subsubsection{6. TOPSIS综合评价法}
+
+\textbf{基本原理：}TOPSIS（逼近理想解排序法）通过计算各方案与正理想解（各指标均最优）和负理想解（各指标均最劣）的距离来排序。最优方案应最接近正理想解且最远离负理想解：
+
+\begin{equation}
+C_i = \frac{D_i^-}{D_i^+ + D_i^-}, \quad
+D_i^+ = \sqrt{\sum_{j=1}^m w_j (z_{ij} - z_j^+)^2}, \quad
+D_i^- = \sqrt{\sum_{j=1}^m w_j (z_{ij} - z_j^-)^2}
+\end{equation}
+
+其中$z_j^+ = \max_i z_{ij}$，$z_j^- = \min_i z_{ij}$（正向指标），$C_i \in [0,1]$越接近1表示方案越优。
+
+\textbf{适用问题：}多方案择优决策（如供应商选择、选址评价、方案比选）；可与熵权法、AHP等组合使用以获得主客观综合权重。
+
+\textbf{优缺点：}
+\begin{itemize}[leftmargin=*]
+    \item[+] 逻辑清晰，几何意义直观；对数据分布无特殊要求；可处理任意数量的方案和指标。
+    \item[$-$] 对指标的相关性敏感；正负理想解受异常值影响较大；默认各指标等权或需另行赋权。
+\end{itemize}
+
+% ----------
+\subsection{分类与预测类}
+
+\subsubsection{7. 决策树分类}
+
+\textbf{基本原理：}决策树通过对特征空间进行递归二元划分来构建分类规则。每次划分选择使"不纯度"下降最大的特征和切分点。分类树常用的不纯度指标为基尼系数（Gini）：
+
+\begin{equation}
+\text{Gini}(D) = 1 - \sum_{c=1}^{C} p_c^2, \quad
+\Delta\text{Gini} = \text{Gini}(D) - \frac{|D_L|}{|D|}\text{Gini}(D_L) - \frac{|D_R|}{|D|}\text{Gini}(D_R)
+\end{equation}
+
+其中$p_c$为第$c$类在节点$D$中的比例，$D_L$和$D_R$为划分后的左右子节点。
+
+\textbf{算法步骤（CART）：}
+\begin{enumerate}[label=(\arabic*), leftmargin=*]
+    \item 从根节点开始，对所有特征和所有可能的切分点，计算基尼系数下降量；
+    \item 选择$\Delta$Gini最大的特征和切分点进行二元划分；
+    \item 对子节点递归重复步骤1--2，直到满足停止条件（节点纯度足够高、样本数过少、或达到最大深度）；
+    \item 对生成的树进行后剪枝以避免过拟合。
+\end{enumerate}
+
+\textbf{适用问题：}在培训作业2中用于区分高钾玻璃和铅钡玻璃——以PbO、SiO$_2$等化学成分含量为特征，经贝叶斯超参数优化后的决策树（MinLeafSize=1）在未风化样本上达到100\%分类准确率，但在风化样本上因类别不平衡出现过拟合。典型应用还包括医学辅助诊断和信用评分卡开发，这些场景中模型的可解释性（if-then规则）比预测精度更受重视。
+
+\textbf{优缺点：}
+\begin{itemize}[leftmargin=*]
+    \item[+] 生成的分类规则可追溯、可解释；自动捕捉特征间的交互作用，无需手动构造交叉项；对异常值和缺失值有一定容忍度；不需要对特征做标准化预处理。
+    \item[$-$] 不加约束时极易过拟合——在玻璃数据上，未剪枝决策树对风化样本的分类正确率虚高至99\%以上，经限幅（MinLeafSize=3）后才恢复正常（约85\%）；训练数据的小变化可能导致树结构显著不同；各类别样本量悬殊时偏向多数类。
+\end{itemize}
+
+\subsubsection{8. ARIMA时间序列预测}
+
+\textbf{基本原理：}ARIMA$(p,d,q)$模型由三部分组成——自回归（AR，阶数$p$）、差分（I，阶数$d$）和移动平均（MA，阶数$q$）。其数学形式为：
+
+\begin{equation}
+\phi(B) (1-B)^d y_t = \theta(B) \varepsilon_t, \quad \varepsilon_t \sim N(0, \sigma^2)
+\end{equation}
+
+其中$B$为滞后算子（$By_t = y_{t-1}$），$\phi(B) = 1 - \phi_1 B - \dots - \phi_p B^p$，$\theta(B) = 1 + \theta_1 B + \dots + \theta_q B^q$。
+
+\textbf{算法步骤（Box-Jenkins方法）：}
+\begin{enumerate}[label=(\arabic*), leftmargin=*]
+    \item \textbf{平稳化}：对序列进行ADF检验，若非平稳则进行$d$阶差分直到平稳；
+    \item \textbf{模型识别}：观察ACF和PACF图确定$p$和$q$的候选范围；
+    \item \textbf{参数估计}：用最大似然或最小二乘估计$\phi_i$和$\theta_j$；
+    \item \textbf{模型诊断}：检验残差是否为白噪声（Ljung-Box检验），若不通过则调整$(p,d,q)$；
+    \item \textbf{预测}：用拟合模型进行前向预测。
+\end{enumerate}
+
+\textbf{适用问题：}中短期平稳（或可差分平稳）时间序列的预测，如销售量、股票价格、气温、电力负荷等。
+
+\textbf{优缺点：}
+\begin{itemize}[leftmargin=*]
+    \item[+] Box-Jenkins方法论提供了从平稳性检验到模型诊断的完整框架；对线性趋势和稳定的季节性模式捕捉效果良好；模型仅含3个结构参数，在预测时可直接给出置信区间，可解释性优于黑箱模型。
+    \item[$-$] 核心局限在于线性假设——若序列包含结构突变（如疫情导致的消费模式骤变），ARIMA无法自动适应。手动定阶仍依赖ACF/PACF图的目视判断，尤其在$p$和$q$均较大时容易混淆。auto.arima（基于AIC/BIC自动搜索）在某些情况下倾向于选择过于简化的低阶模型。
+\end{itemize}
+
+\subsubsection{9. PLS-DA（偏最小二乘判别分析）}
+
+\textbf{基本原理：}PLS-DA是PLS回归在分类问题上的推广。与PCA先将$\mathbf{X}$降维再与$\mathbf{Y}$回归不同，PLS在提取潜变量时同时考虑$\mathbf{X}$和$\mathbf{Y}$的协方差最大化，确保提取的成分对$\mathbf{Y}$有最强的解释能力：
+
+\begin{equation}
+\mathbf{X} = \mathbf{T}\mathbf{P}^T + \mathbf{E}, \quad
+\mathbf{Y} = \mathbf{U}\mathbf{Q}^T + \mathbf{F}
+\end{equation}
+
+且$\mathbf{t}_h$和$\mathbf{u}_h$之间的协方差最大化。在PLS-DA中，$\mathbf{Y}$为类别指示矩阵（one-hot编码）。
+
+\textbf{适用问题：}高维小样本的分类问题，尤其当自变量高度共线时（如光谱数据分类、代谢组学、化学成分分析）。在培训作业2中用于玻璃类型分类。
+
+\textbf{优缺点：}
+\begin{itemize}[leftmargin=*]
+    \item[+] 处理$p \gg n$问题（变量数远超样本数）效果优秀；对多重共线性免疫；可同时进行特征重要性评估（VIP得分）。
+    \item[$-$] 对异常值敏感；潜变量数量需通过交叉验证确定；分类边界不一定是全局最优。
+\end{itemize}
+
+% ----------
+\subsection{优化求解类}
+
+\subsubsection{10. 线性规划（LP）}
+
+\textbf{基本原理：}线性规划研究在若干线性等式和不等式约束下，最大化或最小化一个线性目标函数的问题。标准形式为：
+
+\begin{equation}
+\min \; \mathbf{c}^T \mathbf{x}, \quad \text{s.t.} \; \mathbf{A}\mathbf{x} \leq \mathbf{b}, \; \mathbf{x} \geq \mathbf{0}
+\end{equation}
+
+核心理论基础是\textbf{单纯形法}：由于线性规划的最优解必在可行域多面体的顶点处取得，单纯形法从一个初始顶点出发，沿着使目标函数下降的边移动到相邻顶点，直到无法继续下降为止。
+
+\textbf{适用问题：}在个人作业中实践了完整的LP建模流程——将minimax投资组合模型（$\min \max_i \{q_i x_i\}$）通过引入辅助变量$t$转化为标准LP，然后用MATLAB的linprog（基于HiGHS求解器）在8次单纯形迭代内获得7资产算例的全局最优解。更大规模的应用包括生产排程、物流网络设计和投资组合优化——凡是目标函数和约束条件均为决策变量线性函数的优化场景均可使用。
+
+\textbf{优缺点：}
+\begin{itemize}[leftmargin=*]
+    \item[+] MATLAB的linprog、Gurobi和CPLEX等求解器高度成熟，对数百变量的中等规模问题可在秒级求解；保证全局最优（与GA等启发式方法的局部解风险相比，这是核心优势）。
+    \item[$-$] 对非线性关系完全无效——若实际问题涉及非线性的供需函数或规模效应，需转向非线性规划或智能优化方法。整数约束版本属于NP-hard，变量规模超过数千时精确求解可能不可行。
+\end{itemize}
+
+\subsubsection{11. 遗传算法（GA）}
+
+\textbf{基本原理：}遗传算法模拟自然选择和遗传机制来解决优化问题。将候选解编码为"染色体"，通过选择、交叉和变异操作迭代进化种群，使种群适应度逐步提高：
+
+\begin{enumerate}[label=(\arabic*), leftmargin=*]
+    \item \textbf{编码}：将决策变量编码为染色体（二进制串或实数向量）；
+    \item \textbf{初始化}：随机生成$N$个个体的初始种群；
+    \item \textbf{适应度评估}：计算每个个体对应的目标函数值；
+    \item \textbf{选择}：根据适应度以轮盘赌或锦标赛方式选出父代；
+    \item \textbf{交叉}：两个父代染色体在随机位置交换片段，生成子代；
+    \item \textbf{变异}：以低概率随机改变子代染色体的某些基因位；
+    \item \textbf{替代}：用子代替换父代（或精英保留），回到步骤3。
+\end{enumerate}
+
+\textbf{适用问题：}难以用传统方法求解的非线性、非凸、多模态优化问题；组合优化（TSP、背包问题、调度问题）；多目标优化（使用NSGA-II）。
+
+\textbf{优缺点：}
+\begin{itemize}[leftmargin=*]
+    \item[+] 搜索策略天然具有跳出局部最优的机制（变异操作）；对目标函数的数学性质（连续、可微、凸性）没有要求，适用范围极广；种群中多个个体可并行评估，计算效率可随硬件线性扩展。
+    \item[$-$] 计算开销大——每个个体需独立计算一次目标函数，种群规模$\times$迭代次数决定了总评估次数。参数敏感性高：在尝试求解Rosenbrock函数时，种群规模从50调整为200后收敛代数从约60代降至约30代，但计算时间增加了约3倍。每次运行结果存在随机性，需要多次运行取统计结果来评估求解质量。
+\end{itemize}
+
+\subsubsection{12. 粒子群算法（PSO）}
+
+\textbf{基本原理：}PSO模拟鸟群觅食行为：每个粒子在搜索空间中飞行，其位置代表候选解，速度决定飞行方向和距离。每个粒子记忆自己找到的最优位置（个体最优$p_{\text{best}}$）和整个群体的最优位置（全局最优$g_{\text{best}}$），并据此调整速度：
+
+\begin{align}
+\mathbf{v}_i^{t+1} &= w\mathbf{v}_i^t + c_1 r_1(\mathbf{p}_i^{\text{best}} - \mathbf{x}_i^t) + c_2 r_2(\mathbf{g}^{\text{best}} - \mathbf{x}_i^t) \\
+\mathbf{x}_i^{t+1} &= \mathbf{x}_i^t + \mathbf{v}_i^{t+1}
+\end{align}
+
+其中$w$为惯性权重，$c_1, c_2$为学习因子，$r_1, r_2 \sim U(0,1)$。
+
+\textbf{适用问题：}连续变量的非线性优化（函数极值、参数优化）；与GA适用场景类似但通常收敛更快。广泛用于神经网络权值优化、工程参数调优等。
+
+\textbf{优缺点：}
+\begin{itemize}[leftmargin=*]
+    \item[+] 收敛速度快（信息共享机制优于GA）；参数少，实现简单；无需梯度信息。
+    \item[$-$] 容易早熟收敛（种群多样性丧失快）；对离散优化问题不直接适用（需修改）；参数（$w, c_1, c_2$）对性能影响大。
+\end{itemize}
+
+\subsection{阶段总结}
+
+\textbf{进展较好的方面：}
+\begin{enumerate}[label=(\arabic*), leftmargin=*]
+    \item 在培训作业1--3的实战中，数据预处理类算法（KNN填充、3$\sigma$检测、标准化/归一化）得到了充分练习。以培训作业3蔬菜数据的预处理为例，878,503条销售流水需按日期--单品维度聚合为46,599条日度记录，此过程中涉及缺失批发价检测（实际缺失率0\%）、交易级数据去重、以及日度加权均价计算。经此训练，对数据清洗的完整流程有了实际操作层面的理解。
+    \item 相关性分析（Pearson、Spearman）、决策树分类（含贝叶斯超参数优化）、线性规划和灰色关联分析等算法完成了从原理推导到MATLAB代码实现的全过程。在培训作业2的玻璃类型鉴别中，使用决策树对高钾玻璃和铅钡玻璃进行分类，训练后发现在风化样本类别不均衡的情况下（高钾风化仅6个样本），未剪枝的决策树存在过拟合倾向——正确率虚高至99\%以上，经限制最小叶节点数后才恢复正常。这一经验比单纯阅读教材更为深刻。
+    \item 在培训作业3的蔬菜定价优化和随后个人作业的minimax投资组合模型中，两次实践了将业务问题转化为数学规划（弹性需求定价对应网格搜索非线性规划，minimax模型对应引入辅助变量的LP转化）并用MATLAB求解的完整链条，对建模的核心步骤有了清晰的把握。
+\end{enumerate}
+
+\textbf{尚需加强的方面：}
+\begin{enumerate}[label=(\arabic*), leftmargin=*]
+    \item 深度学习类算法（LSTM、CNN）仅在理论学习阶段，尚未在数据集上实际运行。时序预测方面目前使用的仍是ARIMA和移动平均，对LSTM的门控机制和序列填充策略仅有书面理解。
+    \item 智能优化算法（GA、PSO）的调参经验欠缺——在尝试用GA求解一个非凸函数极值时，种群规模从50调整到200、交叉率从0.6调整到0.9，结果差异可达30\%以上，目前尚未形成系统的调参方法论。
+    \item PLS-DA的原理（NIPALS迭代算法、潜变量与协方差最大化的关系）尚未完全消化，目前停留在调用MATLAB的plsregress函数层面。
+\end{enumerate}
+
+\textbf{下阶段计划：}
+\begin{enumerate}[label=(\arabic*), leftmargin=*]
+    \item 在培训作业3的蔬菜日销量数据集上，对比ARIMA与LSTM的预测效果，以此作为深度学习算法的首次实战。
+    \item 系统学习NSGA-II的非支配排序和拥挤度距离计算，结合一个双目标优化算例（如利润最大化+风险最小化）进行编程实现。
+    \item 扩展到图论算法（Dijkstra最短路径、网络最大流）和常微分方程数值求解（RK4），补齐思维导图中尚未涉及的板块。
+    \item 整理一份常用算法的MATLAB函数速查表，将上述代码封装为独立的工具函数，便于比赛中直接调用。
+\end{enumerate}
+
+\newpage
+
+% ============================================================
+\section{论文写作学习与模板}
+% ============================================================
+
+\subsection{一等奖论文结构分析}
+
+以2022年CUMCM C题"古代玻璃制品的成分分析与鉴别"的优秀论文C229为对象，分析其结构和写法。
+
+\subsubsection{摘要}
+
+\textbf{写法分析：}摘要约700--800字，采用"总--分--总"三段式结构。第一段总述问题、数据和目标（1--2句话），第二段按问题顺序分别说明每个子问题的方法、关键结果和数值（约占60\%篇幅），第三段总结创新点。每个子问题都必须有具体的数值结果（如"分类准确率达96.3\%"）。
+
+\textbf{关键技巧：}
+\begin{itemize}[leftmargin=*]
+    \item 务必写明具体数值（不要写"效果良好"，要写"准确率96.3\%"）；
+    \item 方法名称要完整（如"基于贝叶斯优化的决策树分类模型"，而非"决策树"）；
+    \item 每个问题1--2句话交代方法，1句话交代结果；
+    \item 结尾提炼2--3个创新点/亮点。
+\end{itemize}
+
+\subsubsection{问题重述}
+
+\textbf{写法分析：}分为"问题背景"和"问题要求"两个子部分。背景部分将题目原文用自己的语言重新组织，突出与后续建模相关的关键信息（数据规模、物理/经济背景、核心矛盾）。问题要求部分将四个子问题以编号列出，每问2--3句话，明确需要完成的具体任务。
+
+\textbf{关键技巧：}
+\begin{itemize}[leftmargin=*]
+    \item 不要直接复制题目原文，要重新组织语言；
+    \item 背景中嵌入后续建模所需的关键数据（样本量、变量数、时间跨度等）；
+    \item 问题要求不仅要写"要做什么"，还要暗示"可以怎么做"（为后文方法做铺垫）。
+\end{itemize}
+
+\subsubsection{模型假设}
+
+\textbf{写法分析：}约6条假设，每条包含三个要素：假设内容 + 设立依据 + （必要时）对模型的影响。按从"核心假设"到"辅助假设"的顺序排列。每条假设都需在正文中有对应的使用场景。
+
+\textbf{关键技巧：}
+\begin{itemize}[leftmargin=*]
+    \item 每条假设必须"有名有姓有依据"——不能随口说"假设数据服从正态分布"，要说"经K-S检验，$p>0.05$，接受正态性假设"；
+    \item 假设数量控制在5--8条，过少不严谨，过多束缚模型；
+    \item 最核心的假设放在第一条（通常是对问题机制的核心简化）。
+\end{itemize}
+
+\subsubsection{符号说明}
+
+\textbf{写法分析：}用一个三列表格（符号、含义、单位）统一整理全文所用符号。每个符号首次出现时在正文中附带中文解释。
+
+\subsubsection{模型建立与求解（核心部分，占全文60\%+）}
+
+\textbf{写法分析：}每个问题的写作结构为：
+
+\begin{center}
+\textbf{模型建立 → 模型求解 → 结果分析 → 模型检验}
+\end{center}
+
+\textbf{模型建立：}从问题出发，阐明为什么采用该模型（而非其他模型），给出数学模型公式（编号），解释公式中各符号含义。
+
+\textbf{模型求解：}给出求解方法（解析解或数值算法），说明求解工具和参数设置。
+
+\textbf{结果分析：}将计算结果以表格和图表展示。每个图表下方都有2--4句解读（图/表显示了什么规律？为什么出现这种规律？有什么启示？）。
+
+\textbf{模型检验：}对模型进行稳定性/鲁棒性检验（如敏感性分析、扰动测试、交叉验证）。
+
+\subsubsection{模型评价与改进}
+
+\textbf{写法分析：}分"优点"和"缺点"两部分，各3--5条。优点不泛泛而谈（如"模型简单"），要结合具体问题说明（如"通过CLR变换消除了成分数据的闭合效应"）。缺点要对应改进方向，不可只说"模型不够精确"而不说如何改进。
+
+\subsubsection{参考文献}
+
+10--15篇，中英文混合，以期刊论文为主。
+
+\subsection{队伍写作模板}
+
+以下模板基于对优秀论文C229的结构分析，并结合培训作业1--3的写作实践总结而成。各节的撰写要点直接标注在对应标题下方，在后续比赛中可直接套用此框架，根据具体题目填充内容。
+
+\newpage
+\noindent\textbf{\large 论文标题（中文，不超过25字，概括核心方法与问题）}
+
+\bigskip
+\noindent\textbf{【摘要】（700--800字，全文最重要的部分，需反复打磨）}
+
+摘要采用"总--分--总"三段结构。首段用1--2句交代问题背景、数据规模和整体解决思路。中段按题号顺序（问题1→2→3→4），每问分配2--3句话——先说明所采用的模型/方法（名称要完整，如"基于贝叶斯优化的决策树分类模型"），再给出1个关键数值结果（务必写具体数字而非模糊描述）。末段提炼2--3个创新点或亮点，突出与同类工作的差异。
+
+\textit{常见问题：}摘要中写了"效果较好"但无具体数值——评阅人无法判断"较好"的标准。应将每个结果量化（如"分类准确率96.3\%"、"总利润10,854元"）。
+
+\noindent\textbf{关键词：}3--5个，涵盖核心方法（如"决策树"、"相关性分析"）和问题领域（如"玻璃成分分析"）。
+
+\medskip
+\noindent\textbf{【1. 问题重述】}
+
+分为"1.1 问题背景"和"1.2 问题要求"两个子节。背景部分用重组后的语言叙述题目——重点突出与后续建模直接相关的信息（数据量级、物理/经济机制、核心矛盾），避免逐字照搬原文。问题要求部分按题号列出各小问的具体任务，可顺便暗示拟采用的方法方向。篇幅控制在1页以内。
+
+\medskip
+\noindent\textbf{【2. 模型假设】}
+
+列出5--8条假设，按"核心假设（对问题机制的关键简化）在前，辅助假设（为数学处理便利）在后"的顺序排列。每条假设需包含三个要素：假设的具体内容、为何可以这样假设（数据检验或物理依据）、以及该假设对后续建模的影响。例如，不写"假设数据服从正态分布"，而写"经K-S检验，$p=0.32>0.05$，接受正态性原假设，故可使用基于正态理论的3$\sigma$异常值检测方法"。
+
+\medskip
+\noindent\textbf{【3. 符号说明】}
+
+用三线表统一整理全文所用符号，列为"符号、含义与单位、备注"。符号首次在正文中出现时附带中文解释。建议在写作过程中随时补充此表，避免最后集中整理时遗漏。
+
+\medskip
+\noindent\textbf{【4. 数据处理】（视题目而定，数据型题目必有此节）}
+
+按"数据质量检查→清洗/填充→特征工程→数据集划分"的顺序叙述。每步需回答三个问题：做了什么操作、为什么做（数据中发现了什么问题）、操作后的结果如何（以具体数字说明，如"KNN填充后所有变量的缺失率降为0\%"）。
+
+\medskip
+\noindent\textbf{【5. 模型建立与求解】（全文核心，占篇幅60\%以上，按问题分节）}
+
+每问（每一节）按照"模型建立→模型求解→结果分析→模型检验"四个模块组织：
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{模型建立}：首先说明为什么选择该模型（与备选方案的简要对比），然后给出完整的数学公式（带编号），解释公式中每个符号的含义。公式与文字交替出现，避免连续堆砌公式。
+    \item \textbf{模型求解}：说明求解方法（解析解、数值算法或启发式搜索），给出关键参数设置和求解工具（MATLAB/Python函数名）。若涉及迭代过程，需说明收敛判据和终止条件。
+    \item \textbf{结果分析}：以表格和图形展示计算结果。每个图表下方附2--4句解读——图表展示了什么规律、为什么会出现这种规律、对问题有什么启示。表格中关键数值可用加粗突出。
+    \item \textbf{模型检验}：进行至少一项稳健性验证——参数敏感性分析（关键参数$\pm$扰动，观察结果变化）、数据扰动测试（对输入数据加噪声，观察输出稳定性）或统计检验（如交叉验证、Bootstrap置信区间）。
+\end{enumerate}
+
+\textit{注意事项：}四个问之间应有逻辑衔接——问题1的结论为问题2的模型提供参数/依据，问题2和问题3之间有递进关系，问题4从前三问的建模实践中归纳数据需求。
+
+\medskip
+\noindent\textbf{【6. 模型评价与改进】}
+
+优点3--5条，每条结合具体问题说明（不能写"模型简单"，而应写"引入辅助变量将minimax问题转化为LP，计算复杂度从指数级降至多项式级"）。缺点及改进方向对等条数，每条指出一个具体局限并给出可操作的改进方案（不能只写"模型不够精确"而无改进方向）。
+
+\medskip
+\noindent\textbf{【7. 参考文献】}
+
+10--15篇，中英文混合，以近5年的期刊论文为主，教材为辅。推荐格式：GB/T 7714。每篇文献在正文中至少被引用一次。建议覆盖以下类型：方法类（如决策树、ARIMA的原著文献）、应用类（类似问题领域的前人研究）、工具类（所用软件的官方文档）。
+
+\medskip
+\noindent\textbf{【附录】}
+
+附上4问求解的核心MATLAB/Python代码，每问选取最关键的30--50行。代码需有简要注释说明功能模块。使用lstlisting环境实现语法高亮和行号，方便评阅人查阅。
+
+
+\end{document}
