@@ -1,0 +1,11 @@
+clear; clc;
+base_dir = fileparts(mfilename('fullpath'));
+addpath(base_dir);
+fprintf('smoke plan\n');
+run(fullfile(base_dir,'solve_problem1.m'));
+run(fullfile(base_dir,'solve_problem2.m'));
+run(fullfile(base_dir,'solve_problem3.m'));
+run(fullfile(base_dir,'solve_problem4.m'));
+run(fullfile(base_dir,'solve_problem5.m'));
+export_results();
+fprintf('done\n');
