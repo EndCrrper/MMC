@@ -2,6 +2,7 @@ function report = validate_results()
 base = fileparts(mfilename('fullpath'));
 out = fullfile(base,'..','result');
 report = struct([]);
+Dfine = data_a(48,9);
 
 for p = 1:5
     S = load(fullfile(out,sprintf('problem%d.mat',p)));
@@ -14,11 +15,11 @@ for p = 1:5
     if isinf(gaps), gaps = nan; end
     mids = 1;
     if p==5, mids=1:3; end
-    fine = coverage_time(S.routes,S.bombs,mids,data_a(48,9),0.01,true);
+    fine = coverage_time(S.routes,S.bombs,mids,Dfine,0.01,true);
     marginal = zeros(size(S.bombs,1),numel(mids));
     for i = 1:size(S.bombs,1)
         keep = true(size(S.bombs,1),1); keep(i)=false;
-        marginal(i,:) = fine' - coverage_time(S.routes,S.bombs(keep,:),mids,data_a(48,9),0.01,true)';
+        marginal(i,:) = fine' - coverage_time(S.routes,S.bombs(keep,:),mids,Dfine,0.01,true)';
     end
     report(p).speed = [min(v),max(v)];
     report(p).min_height = min(S.C.burst(:,3));

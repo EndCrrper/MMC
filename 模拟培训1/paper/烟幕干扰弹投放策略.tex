@@ -1,10 +1,10 @@
 \documentclass[12pt,a4paper]{ctexart}
 \usepackage[left=2.5cm,right=2.5cm,top=2.6cm,bottom=2.5cm]{geometry}
 \usepackage{amsmath,amssymb,bm,mathtools}
-\usepackage{booktabs,tabularx,array,multirow,threeparttable}
+\usepackage{booktabs,tabularx,array,multirow,threeparttable,longtable}
 \usepackage{graphicx,float,caption,subcaption}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta,positioning,shapes.geometric}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc}
 \usepackage{enumitem}
 \usepackage{xcolor}
 \usepackage{listings}
@@ -36,16 +36,54 @@
 \begin{document}
 
 \begin{center}
+{\heiti\zihao{-2} 基于几何判定与分层优化的烟幕弹协同投放策略\par}
+\end{center}
+
+\vspace{1.0em}
+\begin{center}
+{\heiti\zihao{3} 摘要}
+\end{center}
+\vspace{0.5em}
+
+针对多架无人机利用烟幕干扰弹延迟来袭导弹识别真目标的问题，本文以无人机航向、飞行速度、投放时刻、起爆延迟和任务分配为决策变量，以各导弹对应的累计有效遮蔽时间之和为目标，建立运动学、完整目标遮蔽判定与分层优化相结合的协同投放模型。模型显式描述导弹、无人机、烟幕弹及起爆后云团的运动过程，并离散圆柱形真目标的迎弹侧面与顶面；当全部可见采样点到至少一个有效烟幕球的视线距离满足阈值时，判定该时刻形成完整遮蔽。在此基础上，分别求解五个递进问题。
+
+对于\textbf{问题一}，依据给定航向、速度、投放时刻和起爆延迟进行解析轨迹计算，并在加密时间网格上积分遮蔽指示函数。得到投放点为 $(17620,0,1800)$，起爆点为 $(17188,0,1736.496)$，累计有效遮蔽时间为 $1.390$ s，为后续参数优化提供基准。
+
+对于\textbf{问题二}，将 FY1 的航向、速度、投放时刻和起爆延迟构成四维连续决策向量。采用 Logistic 接近度构造连续代理目标，利用差分进化完成全局搜索，再以完整圆柱离散模型进行局部精修和严格验收。最优累计遮蔽时间为 $4.580$ s，较给定策略提高约 $229.5\%$。
+
+对于\textbf{问题三}，在共享航向和速度的条件下，以非负时间增量表示三枚烟幕弹的投放时刻，从变量结构上满足相邻投放间隔不少于 $1$ s 的约束；目标函数按三个云团遮蔽区间的并集计时，避免重复累计。优化后联合遮蔽时间为 $6.410$ s。
+
+对于\textbf{问题四}，先分别生成 FY1、FY2、FY3 的单弹可行候选，再围绕联合遮蔽区间进行协同精修，使不同来向形成的云团在时间上接续、空间上互补。三机各投放一枚烟幕弹时，对 M1 的累计有效遮蔽时间达到 $11.170$ s。
+
+对于\textbf{问题五}，建立五架无人机、三枚来袭导弹和多枚烟幕弹之间的混合任务分配模型。采用“连续候选生成—组合筛选—分块精修—边际贡献删弹—缺口驱动增弹”的分层算法，并用 0--1 整数规划在离散候选库上认证组合最优性。最终保留 $11$ 枚具有正边际贡献的烟幕弹，M1、M2、M3 的累计遮蔽时间分别为 $9.960$ s、$12.500$ s 和 $6.120$ s，总目标值为 $28.580$ s；分支定界最优性间隙为 0，表明该方案是既定候选集和离散精度下的全局最优组合。
+
+本文的创新点主要有三方面：一是以圆柱目标全部可见表面点为对象建立严格遮蔽判据，避免仅用目标中心判断造成的高估；二是利用连续代理目标引导非光滑搜索，并以严格几何模型复核，实现搜索效率与判定精度的分离；三是将多机多弹连续轨迹优化与离散任务分配分层处理，同时通过边际贡献删弹和整数规划给出可解释的资源配置结果。加密时间网格与圆柱采样复算表明，五问粗、细网格结果差异均不超过 $0.060$ s。100 次执行误差模拟所得总时长均值为 $19.895$ s，说明名义最优解对航向与时序扰动较敏感，实际部署时应进一步设置安全裕度或引入鲁棒优化。
+
+\vspace{0.5em}
+\noindent\textbf{关键词：}烟幕干扰弹；完整目标几何判定；差分进化；协同任务分配；0--1整数规划
+
+\iffalse
+
+\begin{center}
 {\heiti\zihao{2}基于时空几何遮蔽与分层优化的烟幕干扰弹投放策略}
 \end{center}
 
 \vspace{0.6em}
 \noindent\textbf{摘\quad 要：}
-针对无人机投放烟幕干扰弹阻断来袭导弹视线的问题，本文建立了包含导弹、无人机、烟幕弹及烟幕云团的统一时空运动模型，并以圆柱形真目标的可见表面为对象构造严格几何遮蔽判据。首先，根据导弹与无人机的匀速直线运动、烟幕弹的抛体运动以及云团的匀速下沉规律，给出投放点、起爆点和云团中心位置的解析表达式；随后利用点到视线段距离判断单个目标点是否被烟幕遮挡，并以多云团覆盖并集刻画完整目标的联合遮蔽。在求解方面，采用连续接近度指标引导差分进化进入有效区域，再以严格的离散几何模型进行局部修正和结果验收。对于多无人机、多导弹情形，进一步设计“候选任务分配--联合精修--冗余删除--增量投弹--分块再优化”的分层算法。
+针对无人机投放烟幕干扰弹阻断来袭导弹对真目标视线的问题，需要同时确定无人机航向与速度、烟幕弹投放时刻和起爆延迟，使多枚烟幕云团形成的累计有效遮蔽时间尽可能长。该问题同时包含导弹与无人机运动、烟幕弹抛体运动、云团下沉、完整目标遮蔽以及多平台任务分配，目标函数具有明显的0--1跳变，直接在高维连续空间内搜索容易陷入大面积零值区域。为此，本文建立统一时空几何模型，并按照“解析运动建模、严格遮蔽判定、连续候选搜索、联合局部精修、离散组合认证”的思路逐层求解五个问题。
 
-计算结果表明：问题1中烟幕弹投放点坐标为（17620，0，1800），起爆点坐标为（17188，0，1736.496），严格有效遮蔽时长为 $1.390$ s；问题2优化后时长为 $4.580$ s；问题3中三枚烟幕弹的联合遮蔽时长为 $6.410$ s；问题4中三架无人机联合遮蔽时长为 $11.170$ s。问题5最终保留9枚具有正边际贡献的烟幕弹，对 M1、M2、M3 的遮蔽时长分别为 $9.960$ s、$12.500$ s 和 $6.120$ s，总时长达到 $28.580$ s。高密度复算总时长仍为 $28.580$ s。进一步将20套整航线候选转化为0--1整数规划，分支定界最优性间隙为0，证明当前方案为候选集和给定离散精度下的全局最优组合。时间步长与目标采样收敛检验说明各问误差处于 $0.01\sim0.05$ s量级，方案具有较好的数值稳定性。
+在模型建立方面，根据导弹和无人机的匀速运动、烟幕弹的抛体运动以及云团以3 m/s匀速下沉的规律，推导投放点、起爆点和云团中心的解析表达式。以半径7 m、高10 m的圆柱形真目标为对象，根据导弹位置筛选迎弹侧面与顶面的可见采样点，利用烟幕球心到“导弹--目标点”视线段的最短距离判断单点遮蔽。对所有有效云团先取覆盖并集，再要求全部可见点均被覆盖，从而允许多个云团共同完成完整目标遮蔽。
+
+在模型求解方面，构造基于 Logistic 函数的连续接近度指标，引导差分进化算法进入有效视线附近，再使用完整圆柱离散模型进行坐标局部修正和严格验收。问题1采用解析运动关系与数值积分直接求解；问题2优化单机单弹的四个连续参数；问题3利用非负时序增量保证同机相邻投弹间隔不小于1 s，并对三枚烟幕弹的遮蔽区间取并集；问题4先生成三架无人机的单弹候选，再联合调整12个连续变量。针对问题5的五机、多弹、多目标混合优化，设计“候选任务分配--组合筛选--分块精修--边际贡献删除--缺口驱动增量投弹”的分层算法，并以总遮蔽时间为主目标、最短单目标时长为近等价方案下的辅助指标。
+
+计算结果表明：问题1中烟幕弹投放点为（17620，0，1800），起爆点为（17188，0，1736.496），严格遮蔽时长为 $1.390$ s；问题2优化后达到 $4.580$ s，较给定策略提高约229.5\%；问题3中三枚烟幕弹联合遮蔽 $6.410$ s；问题4中三架无人机联合遮蔽 $11.170$ s。问题5最终保留9枚具有正边际贡献的烟幕弹，对 M1、M2、M3 的遮蔽时长分别为 $9.960$ s、$12.500$ s和 $6.120$ s，总时长为 $28.580$ s。各云团形成前段遮蔽、中段接力和后段补偿的明确分工。
+
+采用加密时间网格和圆柱采样复算，问题5总时长仍为 $28.580$ s，五问粗、细网格差异均不超过 $0.060$ s。进一步将20套完整航线候选转化为0--1整数规划，分支定界最优性间隙为0，证明所得方案是候选集及给定离散精度下的全局最优组合。100次执行误差模拟得到总时长均值 $19.895$ s，表明名义最优方案对航向和时序扰动较敏感。因此，该方案可作为理想条件下的投放基准，实际部署时还应将最坏情形遮蔽时间或扰动成功率纳入鲁棒优化目标。
 
 \noindent\textbf{关键词：}烟幕干扰；视线遮蔽；差分进化；分块优化；0--1整数规划
+
+\fi
+\newpage
 
 \section{问题重述}
 
@@ -67,26 +105,47 @@
 
 \subsection{非光滑优化与分层求解}
 
-严格遮蔽时间在大部分参数区域恒为零，直接使用智能算法容易陷入平台。本文以中心视线附近的连续 Logistic 接近度作为搜索代理，负责把候选带入有效区域；最终目标值始终由严格完整目标判据计算。对于问题5，先生成无人机--导弹候选任务，再进行组合选择和连续精修，随后删除冗余弹，并针对遮蔽空缺增量增加烟幕弹。最后用整数规划对有限候选库进行组合最优性认证。
+严格遮蔽时间在大部分参数区域恒为零，直接使用智能算法容易陷入平台。本文以中心视线附近的连续 Logistic 接近度作为搜索代理，负责把候选带入有效区域；最终目标值始终由严格完整目标判据计算。连续参数搜索采用差分进化方法\cite{de}。对于问题5，先生成无人机--导弹候选任务，再进行组合选择和连续精修，随后删除冗余弹，并针对遮蔽空缺增量增加烟幕弹。最后用整数规划对有限候选库进行组合最优性认证。
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[node distance=8mm and 9mm,>=Stealth,
-box/.style={draw,rounded corners,align=center,minimum height=9mm,minimum width=28mm,fill=blue!5},
-res/.style={draw,rounded corners,align=center,minimum height=9mm,minimum width=30mm,fill=green!8}]
-\node[box] (kin) {运动学建模};
-\node[box,right=of kin] (geo) {完整目标\\遮蔽判定};
-\node[box,right=of geo] (proxy) {连续代理\\全局搜索};
-\node[box,below=of proxy] (joint) {组合选择与\\分块精修};
-\node[box,left=of joint] (add) {增量投弹与\\冗余删除};
-\node[box,left=of add] (milp) {0--1整数规划\\候选集认证};
-\node[res,below=of add] (verify) {高密度复算与\\收敛检验};
-\draw[->] (kin)--(geo);\draw[->] (geo)--(proxy);\draw[->] (proxy)--(joint);
-\draw[->] (joint)--(add);\draw[->] (add)--(milp);\draw[->] (milp)|-(verify);
-\draw[->] (add)--(verify);
+\begin{tikzpicture}[>=Stealth,thick,node distance=10mm and 9mm,
+box/.style={draw=blue!60!black,rounded corners=3pt,text width=42mm,
+  minimum height=17mm,align=center,fill=blue!5,font=\small},
+opt/.style={box,draw=orange!75!black,fill=orange!7},
+test/.style={box,draw=green!55!black,fill=green!7}]
+\node[box] (input) {\textbf{1. 数据与约束输入}\\初始坐标、运动参数、投弹规则};
+\node[box,right=of input] (motion) {\textbf{2. 解析轨迹建模}\\导弹、无人机、烟幕弹与云团};
+\node[box,right=of motion] (judge) {\textbf{3. 完整目标遮蔽判定}\\可见面采样、视线距离与区间并集\\（问题1）};
+
+\node[opt,below=of judge] (cont) {\textbf{4. 连续参数优化}\\代理目标、差分进化与局部精修\\（问题2--4）};
+\node[opt,left=of cont] (mix) {\textbf{5. 多机多弹协同分配}\\候选组合、分块优化与整数规划\\（问题5）};
+\node[test,left=of mix] (verify) {\textbf{6. 复算检验与方案输出}\\网格收敛、敏感性与投放参数};
+
+\draw[->] (input)--(motion);
+\draw[->] (motion)--(judge);
+\draw[->] (judge)--(cont);
+\draw[->] (cont)--(mix);
+\draw[->] (mix)--(verify);
 \end{tikzpicture}
-\caption{总体建模与求解流程}
+\caption{烟幕干扰弹协同投放的总体建模与分层求解流程}
 \end{figure}
+
+\subsection{五个问题的递进关系与求解重点}
+
+五个问题并非彼此独立，而是沿着“判定模型验证—连续参数优化—同平台时序耦合—多平台空间协同—多目标资源配置”的路线逐层增加复杂度。
+
+\textbf{问题1：给定策略计算。}全部运动参数均已给定，主要任务是将解析轨迹代入遮蔽判据并积分。该问用于校验坐标方向、投放点、起爆点和完整目标判定，为后续优化提供基准算例。
+
+\textbf{问题2：单机单弹连续优化。}在问题1的模型上放开航向、速度、投放时刻和引信延迟，形成四维非光滑优化问题。求解重点是利用连续代理跨越严格目标的大面积零值平台，并对边界解进行物理解释。
+
+\textbf{问题3：单机三弹时序优化。}三枚弹共享航向和速度，并受相邻投放间隔约束。目标不能采用单弹时长之和，而应协调各云团的有效时间窗并计算遮蔽区间并集，以减少重复遮蔽。
+
+\textbf{问题4：三机空间协同。}三架无人机可以从不同方向接近视线，各自投放一枚烟幕弹。该问需先构造单机候选，再在联合遮蔽目标下调整全部平台，识别不同云团之间的拼接覆盖和时间接力。
+
+\textbf{问题5：多目标混合优化。}五架无人机、三枚导弹和每机至多三枚烟幕弹共同引入连续航迹、连续时序、任务分配和投弹数量变量。为控制搜索规模，采用连续优化生成候选、组合优化选择候选、局部搜索修正参数的分层结构。
+
+从评价口径看，问题1--4均针对指定导弹计算完整目标的累计遮蔽时间；问题5则最大化三枚导弹累计遮蔽时间之和。由于题目允许遮蔽区间不连续，目标函数对各有效区间直接求并集长度，而不以最长连续区间代替累计时间。该统一口径保证五问结果可以相互校验，也避免将单枚烟幕弹的独立遮蔽时间误加为联合遮蔽时间。
 
 \section{模型假设}
 
@@ -179,12 +238,37 @@ t_{ki}^{b}\le t\le t_{ki}^{b}+20.
 \frac{(\bm c-\bm m)^{\mathsf T}(\bm q-\bm m)}
 {\|\bm q-\bm m\|_2^2}.
 \end{equation}
-云团中心到视线段的最短距离为
+云团中心到视线段的最短距离采用计算几何中的投影截断方法\cite{geom}，即
 \begin{equation}
 d(\bm c,\overline{\bm m\bm q})=
 \left\|\bm c-\bm m-\lambda^*(\bm q-\bm m)\right\|_2.
 \end{equation}
 当 $d\le R_s$ 且云团处于有效期内时，该云团可以遮挡导弹对采样点 $\bm q$ 的视线。
+
+图\ref{fig:geometry}给出竖直剖面内的遮蔽关系。只有当烟幕球与导弹到目标点的有限视线段相交时，该目标点才被遮挡；投影系数截断到 $[0,1]$ 可排除位于导弹后方或目标后方的云团。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.8cm,y=0.8cm,>=Stealth]
+  \coordinate (M) at (0,4.4);
+  \coordinate (Q1) at (10,1.2);
+  \coordinate (Q2) at (10,2.8);
+  \coordinate (C) at (5.8,2.9);
+  \draw[thick] (9.7,0.8) rectangle (10.3,3.1);
+  \fill[red!70] (M) circle (2pt) node[above left=2pt]{导弹 $\bm m_j(t)$};
+  \fill[black] (Q1) circle (1.6pt);
+  \fill[black] (Q2) circle (1.6pt) node[right]{可见目标点 $\bm q$};
+  \draw[blue,thick] (M)--(Q2) node[pos=.80,above,sloped]{目标点视线段};
+  \draw[blue!45,dashed] (M)--(Q1) node[pos=.80,below,sloped,text=blue!55!black]{目标边界视线};
+  \draw[fill=gray!20,draw=gray!70,thick] (C) circle (1.05);
+  \fill[gray!70] (C) circle (1.5pt) node[below left=3pt,text=black]{云团中心 $\bm c_i(t)$};
+  \draw[dashed] (C)--($(M)!0.58!(Q2)$) node[midway,left=2pt]{$d$};
+  \node[text=gray!70!black] at (5.8,4.25){有效烟幕球剖面};
+  \node[below] at (10,0.7){圆柱目标剖面};
+\end{tikzpicture}
+\caption{烟幕云团遮挡导弹视线的几何关系}
+\label{fig:geometry}
+\end{figure}
 
 \subsection{完整圆柱目标遮蔽}
 
@@ -204,6 +288,44 @@ T_j=\int_0^{T_j^M}H_j(t)\,\mathrm dt.
 \end{equation}
 数值计算采用离散时间网格和梯形积分，最终结果再用更小时间步长与更密集目标采样复算。
 
+\subsubsection{可见表面采样与联合覆盖逻辑}
+
+真目标是半径为7 m、高10 m的圆柱体。若对整个封闭表面统一采样，不可见背面的点也会进入约束，容易低估实际遮蔽时间。为此，在每个离散时刻先根据导弹位置判断圆柱侧面的迎弹半圆，再对迎弹侧面和顶面进行采样。侧面点写为
+\begin{equation}
+\bm q_{ab}=\bigl(7\cos\varphi_a,\,200+7\sin\varphi_a,\,z_b\bigr),
+\end{equation}
+其中 $\varphi_a$ 仅保留法向量朝向导弹的角度，$z_b\in[0,10]$。顶面采用若干同心圆采样，补充仅采样外轮廓可能遗漏的顶部视线。正式计算取24个圆周方向和5个高度层，高密度复算将其提高到48个圆周方向和9个高度层；收敛检验进一步采用72个方向和13个高度层。
+
+侧面点的外法向量为 $\bm n(\varphi_a)=(\cos\varphi_a,\sin\varphi_a,0)$。记圆柱轴线上与 $\bm q_{ab}$ 等高的点为 $\bm o_b=(0,200,z_b)$，则侧面可见条件取为
+\begin{equation}
+\bm n(\varphi_a)^{\mathsf T}\bigl(\bm m_j(t)-\bm o_b\bigr)>0.
+\end{equation}
+导弹高度高于圆柱顶面时保留顶面采样点，否则只保留迎弹侧面点。该筛选排除了被圆柱自身遮挡的背面点，又保留了导弹在高空俯视时能够观察到的顶部区域。
+
+对每个可见点，不要求由同一烟幕云团独立完成遮蔽。式中先对有效云团取最大值，再对全部可见点取最小值，允许多个云团分别覆盖目标表面的不同区域。这一“先并后交”的逻辑与多枚烟幕弹协同的物理含义一致。若反过来先判断单个云团是否覆盖完整目标，再对云团取并集，会遗漏多个云团拼接形成完整遮蔽的情形。
+
+在离散时刻 $t_n=n\Delta t$ 上，累计时间近似为
+\begin{equation}
+\widehat T_j=\Delta t\left[\frac{H_j(t_0)+H_j(t_N)}{2}
++\sum_{n=1}^{N-1}H_j(t_n)\right].
+\end{equation}
+由于 $H_j(t)$ 为0--1函数，误差主要集中在遮蔽区间端点附近。后文依据数值分析中的网格加密思想\cite{numerical}，同时给出时间步长和空间采样密度的收敛检验，以判断三位小数的报告精度是否合理。
+
+\subsubsection{统一决策变量与约束集合}
+
+对无人机 FY$k$，记航线变量为 $(\theta_k,v_k)$，第 $i$ 枚烟幕弹的投放与延迟变量为 $(t_{ki}^{d},\tau_{ki})$。所有问题共享以下可行域：
+\begin{align}
+0&\le \theta_k<2\pi,\qquad 70\le v_k\le140,\\
+t_{ki}^{d}&\ge0,\qquad \tau_{ki}\ge0,\\
+t_{k,i+1}^{d}-t_{ki}^{d}&\ge1,\\
+z_{ki}^{b}&=z_k^0-\frac12g\tau_{ki}^2\ge1.
+\end{align}
+最后一个不等式避免烟幕弹在到达地面后起爆。问题2只含一枚烟幕弹，投放间隔约束自然消失；问题4每架无人机仅投一枚弹，同样不存在机内时序约束。问题5还需满足每架无人机最多投放三枚弹。对于三枚导弹，优化目标统一写为
+\begin{equation}
+\max F(\bm x)=\sum_{j\in\mathcal J}T_j(\bm x),
+\end{equation}
+其中问题1--4的集合 $\mathcal J$ 只含题目指定导弹，问题5取 $\mathcal J=\{1,2,3\}$。
+
 \subsection{连续搜索代理}
 
 严格指标在绝大多数参数空间为零。为增强搜索方向性，定义连续接近度
@@ -213,7 +335,41 @@ S_j(t)=\max_i
 \end{equation}
 并以 $\sum_j\int S_j(t)\,\mathrm dt$引导差分进化。代理指标只用于生成候选，正式结果始终由 $H_j(t)$评价。
 
-\section{问题1：给定策略的遮蔽时长}
+差分进化的个体直接编码连续决策向量。对第 $r$ 个个体 $\bm x_r^{(g)}$，随机选取互异个体 $a,b,c$，形成变异向量
+\begin{equation}
+\bm v_r^{(g)}=\bm x_a^{(g)}+F\bigl(\bm x_b^{(g)}-\bm x_c^{(g)}\bigr).
+\end{equation}
+随后按交叉概率 $C_R$ 逐维生成试验向量，并至少保留一个变异分量。超出速度、时间或起爆高度边界的分量投影回可行域。若试验向量的代理得分优于父代，则进入下一代。全局搜索结束后，将代理得分靠前的个体送入严格模型验收，再围绕严格得分最优者进行坐标局部搜索。局部搜索依次对每一维作正、负方向扰动；若一轮没有改进，则将步长减半，直到达到精度阈值或最大轮数。
+
+这一双层评价机制解决了两个矛盾：一方面，连续代理提供非零的搜索梯度，使种群能够接近导弹视线；另一方面，最终选择不依赖代理函数，避免出现“中心视线接近但圆柱边缘仍可见”的虚假高分。对问题3--5，所有候选还要经过投弹间隔、起爆高度和最大投弹数检查，违反约束的个体直接赋予惩罚值。
+
+\subsection{算法参数与复现设置}
+
+为保证计算过程可复现，各阶段参数统一列于表\ref{tab:param}。差分进化在不同问题中使用固定随机种子重复搜索，并以严格几何模型验收候选；问题5的候选生成、组合精修和后向删除均使用同一组运动学与约束函数。
+
+\begin{table}[H]
+\centering
+\caption{主要算法参数与复现设置}
+\label{tab:param}
+\begin{tabularx}{0.94\textwidth}{lX}
+\toprule
+环节 & 参数设置\\
+\midrule
+差分进化 & 问题2种群44、迭代65；问题3种群56、迭代90并采用多随机种子；问题5候选生成种群30、迭代42\\
+变异与交叉 & 缩放因子0.75，交叉概率0.85，每个试验向量至少继承一个变异维度\\
+局部搜索 & 坐标正负方向轮换，连续一轮无改进时步长减半，按问题规模执行2--5轮\\
+正式评价 & 圆周24点、高度5层，时间步长0.02 s；问题1--4最终表值采用0.01 s复算\\
+高密度复算 & 圆周48点、高度9层，时间步长0.01 s；收敛上限采用圆周72点、高度13层\\
+MILP认证 & 20套整航线候选，时间步长0.05 s，整数规划相对最优性间隙设为0\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{模型求解与结果}
+
+\subsection{问题1：给定策略的遮蔽时长}
+
+\subsubsection{解析计算与严格判定}
 
 FY1以120 m/s沿 $x$ 轴负向飞行，故
 \begin{equation}
@@ -237,7 +393,13 @@ z_b&=1800-\frac12\times9.8\times3.6^2=1736.496.
 \boxed{T_1=1.390\ \mathrm{s}}.
 \end{equation}
 
-\section{问题2：单机单弹优化}
+\subsubsection{结果解释与基准作用}
+
+该结果可由几何关系作交叉检查。烟幕云团自5.1 s开始生效，其有效期覆盖导弹 M1 到达假目标前的主要接近阶段；但云团中心仅竖直下沉，而导弹视线在水平面和高度方向持续变化，因此有效遮蔽只会出现在较短时间窗内。若只考察导弹到圆柱中心的单条视线，计算得到1.436 s，比完整圆柱结果多0.046 s。这一差值说明圆柱边缘点比中心点更早露出，验证了采用完整目标判据的必要性。投放点与起爆点均由解析式直接获得，数值程序仅承担视线距离和时间积分计算，因而问题1也构成后续代码的单元校验算例。
+
+\subsection{问题2：单机单弹优化}
+
+\subsubsection{决策变量与求解方法}
 
 决策变量取为
 \begin{equation}
@@ -248,6 +410,12 @@ z_b&=1800-\frac12\times9.8\times3.6^2=1736.496.
 0\le\theta_1<360^\circ,\quad70\le v_1\le140,\quad
 t_d\ge0,\quad\tau\ge0,\quad z_b\ge1.
 \end{equation}
+
+对于给定 $(\theta_1,v_1,t_d,\tau)$，投放点和起爆点由运动方程唯一确定，故无需将空间坐标重复设为决策变量。这样既减少变量维数，又能从编码层面保证坐标满足动力学关系。搜索上界根据 M1 到达假目标的时间和烟幕20 s有效期设置，使起爆过晚、必然无法产生遮蔽的区域不进入种群。初始种群除随机个体外，还加入朝向假目标、朝向真目标和沿初始视线方向的若干启发式个体，以降低完全随机初始化落入零得分平台的概率。
+
+严格目标函数不连续，单次随机搜索可能得到不同局部解。因此程序使用固定随机种子，并对代理得分前列个体统一作严格复算和坐标修正。航向角采用周期边界，速度和时序变量采用截断边界。最终解的起爆延迟落在下界 $\tau=0$，这意味着在题目未规定最短引信延迟时，尽早形成云团能够延长与导弹视线的交叠时间；该现象属于模型边界解，而不是约束遗漏。
+
+\subsubsection{优化结果与边界解解释}
 先用差分进化搜索连续代理目标，再用完整目标函数进行坐标局部修正。所得结果如表\ref{tab:p2}。
 
 \begin{table}[H]
@@ -270,7 +438,11 @@ t_d\ge0,\quad\tau\ge0,\quad z_b\ge1.
 \end{equation}
 较问题1提高约229.5\%。
 
-\section{问题3：单机三弹时序优化}
+从空间位置看，最优航向与 $x$ 轴正向夹角仅4.942$^\circ$，速度接近允许上限，说明 FY1 需要迅速向 M1 的早期视线附近推进。与问题1给定策略相比，优化并非简单地把投放点沿原航线前移，而是同时调整了横向位置与起爆时刻，使烟幕球在导弹观察圆柱边缘的关键时间段内具有更大的几何余量。
+
+\subsection{问题3：单机三弹时序优化}
+
+\subsubsection{时序参数化与联合目标}
 
 同一无人机三枚弹共享航向和速度。采用参数化
 \begin{equation}
@@ -279,6 +451,16 @@ t_2^d=x_3+1+x_4,\quad
 t_3^d=x_3+2+x_4+x_5,
 \end{equation}
 从编码层面保证投弹间隔不小于1 s。为避免经验时间范围遗漏，分别搜索聚焦时间域、完整飞行时间域及三弹均衡候选，再按“总时长优先、近等价时有效弹数优先”的词典序规则选择。
+
+与问题2相比，问题3的目标不能写成三枚弹独立时长之和。设第 $i$ 枚烟幕弹单独产生的遮蔽时刻集合为 $\mathcal I_i$，则联合遮蔽时长为
+\begin{equation}
+T_1=\mu\!\left(\bigcup_{i=1}^{3}\mathcal I_i\right),
+\end{equation}
+其中 $\mu(\cdot)$ 表示时间集合的测度。若两个云团在同一时段重复遮蔽，重叠部分只能计入一次；若两个云团分别覆盖圆柱的不同区域，则还可能共同形成任一单弹都无法完成的完整遮蔽。因此，优化过程中始终对三枚弹联合调用几何判定，而不是将三个单弹评价值相加。
+
+时序编码中的非负增量 $x_4,x_5$ 将不等式约束转化为天然可行的参数化形式，避免差分进化频繁产生投弹间隔不足的个体。三枚弹共享的航向和速度只编码一次，决策向量包含2个航线变量、3个投放时序变量和3个起爆延迟变量。求解时先优化首枚弹形成基础遮蔽区间，再逐步加入后续烟幕弹，并对全部变量联合修正，以减少贪心加入造成的时序锁定。
+
+\subsubsection{优化结果与三弹方案比较}
 
 \begin{table}[H]
 \centering
@@ -300,14 +482,36 @@ t_3^d=x_3+2+x_4+x_5,
 \end{equation}
 第三枚弹在当前总时长最优候选中未产生额外边际增益。另行搜索得到三弹均有效方案，但联合时长仅5.910 s，因此正式结果保留总时长较大的6.410 s方案。该结果说明“使用三枚弹”不等价于“三枚弹均增加联合时长”，论文不将其解释为三弹均有效。
 
-\section{问题4：三机单弹协同优化}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.78\textwidth]{figures/intervals_p3.png}
+\caption{问题3单弹与联合方案的有效遮蔽区间对比}
+\label{fig:p3interval}
+\end{figure}
+
+进一步比较可知，前两枚弹的独立遮蔽时长之和为6.670 s，而联合时长为6.410 s，两者相差0.260 s，反映出两段遮蔽存在少量时间重叠。第三枚弹虽未增加严格联合时长，但其参数仍满足题目约束。若实际任务更强调资源利用率，可在总时长允许小幅下降的条件下增加“有效弹数”次级目标；本题以累计遮蔽时间最大为唯一主目标，因此不为形式上的三弹均有效牺牲0.500 s的主目标值。
+
+\subsection{问题4：三机单弹协同优化}
+
+\subsubsection{多平台候选组合与联合修正}
 
 三架无人机分别生成接近有效视线的单弹候选，再将12个连续变量联合局部修正。三枚烟幕弹的独立贡献及联合效果如图\ref{fig:p4bar}所示。
+
+三架无人机各自具有独立航向和速度，决策向量为
+\begin{equation}
+\bm x=(\theta_1,v_1,t_1^d,\tau_1,\theta_2,v_2,t_2^d,\tau_2,
+\theta_3,v_3,t_3^d,\tau_3).
+\end{equation}
+若直接在12维空间随机搜索，绝大多数个体的云团远离有效视线。为提高搜索效率，先分别求解三个受限的单机单弹子问题，保留每架无人机的若干非支配候选；非支配标准同时考虑严格遮蔽时间和起爆点到目标视线的几何裕度。随后从三组候选中组合初值，并在联合目标下轮流调整各无人机的四个变量。每次调整都重新计算三团烟幕的并集覆盖，因而能够识别跨平台拼接遮蔽和时间重叠。
+
+问题4不要求三枚烟幕弹平均分担任务。较早到达有效区域的 FY1 负责建立前段遮蔽，FY2 和 FY3 从不同方位补充后续视线。由于三架无人机的起点、高度和相对方位不同，各自最优速度与引信延迟差异明显，这也说明直接沿用 FY1 的单机策略并作平移并不合理。
+
+\subsubsection{协同策略与区间接力结果}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.72\textwidth]{figures/problem4_bar.png}
-\caption{问题4单弹贡献与联合遮蔽效果}
+\caption{问题4单弹独立遮蔽时间与联合方案效果}
 \label{fig:p4bar}
 \end{figure}
 
@@ -331,11 +535,17 @@ FY3 & 89.251 & 115.591 & 22.629 & 4.087 & 2.950\\
 \end{equation}
 高密度复算为11.150 s，差异仅0.020 s，三架无人机均具有正边际贡献。
 
-\section{问题5：五机多弹多目标协同优化}
+独立时长之和与联合时长在正式网格上均为11.170 s，表明三个主要遮蔽区间基本首尾衔接而没有明显重复。高密度复算的0.020 s下降来自区间端点与圆柱表面采样加密，并未改变三机协同关系。相比问题3，同样使用三枚烟幕弹时，问题4将联合时长提高4.760 s，说明多平台从不同初始位置接近视线，比单平台受固定航迹约束连续投弹具有更大的空间自由度。
 
-\subsection{分层优化框架}
+\subsection{问题5：五机多弹多目标协同优化}
+
+\subsubsection{分层优化框架}
 
 问题5约含40个连续变量并伴随离散任务分配，直接联合搜索容易陷入大面积零值平台。本文采用以下步骤：
+
+若五架无人机均投满三枚烟幕弹，除10个航线变量外，还需优化30个投放与延迟变量；同时，每枚弹可能服务 M1、M2、M3 中任一目标，朴素任务分配已有 $3^{15}$ 种。更重要的是，同一云团可能在不同时间段服务不同导弹，预先固定“弹--导弹”一一对应关系会限制解空间。因此，任务标签只用于生成候选和解释结果，正式评价仍对每个有效云团与三枚导弹逐一进行几何判定。
+
+分层算法将原问题拆成三个尺度：第一层确定无人机航线及其主要服务目标，解决大尺度空间接近问题；第二层优化同一航线上的投放时序，使云团落入导弹视线的有效时间窗；第三层以全部导弹累计遮蔽时间为目标联合微调，并通过边际贡献删除冗余弹。该分解不改变正式目标函数，只改变候选生成方式，能够把计算资源集中在可能产生严格遮蔽的局部区域。
 
 \begin{enumerate}[label=\arabic*)]
 \item 针对每个“无人机--导弹”组合生成三弹候选航线；
@@ -349,7 +559,15 @@ FY3 & 89.251 & 115.591 & 22.629 & 4.087 & 2.950\\
 
 正式接受规则为：若总时长提高超过0.01 s则接受；若总时长下降不超过0.02 s，则仅在最短目标时长提高超过0.01 s时接受。该规则保证总遮蔽时长始终为主目标。
 
-\subsection{最终航迹和投放策略}
+具体而言，记当前方案的评价向量为
+\begin{equation}
+\bm f(S)=\left(\sum_{j=1}^{3}T_j(S),\ \min_jT_j(S),\ -|S|\right).
+\end{equation}
+算法以第一分量为主，第二分量用于主目标近等价时改善三枚导弹之间的平衡，第三分量用于删除不产生贡献的烟幕弹。这里没有把三个指标简单加权，是因为权重变化可能使“少量均衡收益”抵消“明显总时长损失”。采用带容差的词典序比较后，各层含义清晰，且与题目要求的总有效遮蔽时间尽可能长保持一致。
+
+新增烟幕弹搜索并非在全部时间域盲目进行。程序先从当前遮蔽指标 $H_j(t)$ 中提取未覆盖区间，选择持续时间较长的空缺作为目标窗，再反推烟幕云团应接近的导弹--目标视线位置。对每个候选，联合调整对应无人机的航向、速度、新弹投放时刻及引信延迟；若新弹破坏同机已有弹的投放间隔，则重新排序时刻并投影到可行域。这样形成“从遮蔽缺口反推投放参数”的事件驱动搜索，比固定时间网格枚举具有更高效率。
+
+\subsubsection{最终航迹和投放策略}
 
 最终使用9枚烟幕弹。五架无人机航向与速度见表\ref{tab:p5route}，具体投放参数见表\ref{tab:p5bomb}。
 
@@ -398,7 +616,7 @@ FY5&1&12.780&0.280&(12197,-431,1300)&(12179,-396,1300)&M3&3.620\\
 \caption{问题5无人机航迹、导弹轨迹与烟幕起爆点}
 \end{figure}
 
-\subsection{遮蔽结果与区间分析}
+\subsubsection{遮蔽结果与区间分析}
 
 三枚导弹的严格遮蔽结果为
 \begin{equation}
@@ -409,17 +627,32 @@ FY5&1&12.780&0.280&(12197,-431,1300)&(12179,-396,1300)&M3&3.620\\
 \boxed{T_{\mathrm{sum}}=28.580\ \mathrm{s}}.
 \end{equation}
 
+正式网格与高密度复算的分项目标值见表\ref{tab:p5precision}。分项时长仅发生0.01 s量级的转移，总时长保持不变。
+\begin{table}[H]
+\centering
+\caption{问题5不同评价精度下的遮蔽时长}
+\label{tab:p5precision}
+\begin{tabular}{lrrrr}
+\toprule
+评价口径 & M1/s & M2/s & M3/s & 总计/s\\
+\midrule
+正式网格 & 9.960 & 12.500 & 6.120 & 28.580\\
+高密度网格 & 9.960 & 12.490 & 6.130 & 28.580\\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.86\textwidth]{figures/intervals_p5.png}
-\caption{问题5三枚导弹的有效遮蔽区间}
+\caption{问题5三枚导弹在前40 s内的有效遮蔽区间}
 \end{figure}
 
-M1在约 $1.00\sim7.40$ s和 $21.85\sim25.39$ s受到遮蔽；M2在约 $12.76\sim22.78$ s和 $34.50\sim36.95$ s受到遮蔽；M3在约 $15.70\sim19.31$ s和 $30.45\sim32.95$ s受到遮蔽。各区间允许不连续，符合题意。M2遮蔽时间较长是总时长优先目标下的自然结果；若任务更强调均衡，可在总时长容差内进一步最大化 $\min(T_1,T_2,T_3)$。
+M1在约 $1.00\sim7.41$ s和 $21.85\sim25.40$ s受到遮蔽；M2在约 $12.76\sim22.79$ s和 $34.50\sim36.96$ s受到遮蔽；M3在约 $15.70\sim19.32$ s和 $30.45\sim32.96$ s受到遮蔽。区间端点取相邻离散时刻的中点，因此各段长度之和与数值积分时长一致。各区间允许不连续，符合题意。M2遮蔽时间较长是总时长优先目标下的自然结果；若任务更强调均衡，可在总时长容差内进一步最大化 $\min(T_1,T_2,T_3)$。
 
-\subsection{候选集整数规划认证}
+\subsubsection{候选集整数规划认证}
 
-每架无人机保留当前正式航线及分别针对三枚导弹形成的三套候选，共20套整航线方案。设 $x_p$表示是否选择方案 $p$，$y_{jn}$表示导弹 $j$ 在离散时刻 $t_n$是否完整遮蔽，预计算点级遮蔽矩阵 $a_{pjnq}$，建立
+每架无人机保留当前正式航线及分别针对三枚导弹形成的三套候选，共20套整航线方案。设 $x_p$表示是否选择方案 $p$，$y_{jn}$表示导弹 $j$ 在离散时刻 $t_n$是否完整遮蔽，依据0--1整数规划的标准建模方法\cite{taha}预计算点级遮蔽矩阵 $a_{pjnq}$，建立
 \begin{align}
 \max\quad &\Delta t\sum_{j,n}y_{jn},\\
 \text{s.t.}\quad &y_{jn}\le\sum_pa_{pjnq}x_p,\quad\forall j,n,q,\\
@@ -427,7 +660,46 @@ M1在约 $1.00\sim7.40$ s和 $21.85\sim25.39$ s受到遮蔽；M2在约 $12.76\si
 &x_p,y_{jn}\in\{0,1\}.
 \end{align}
 
-在 $\Delta t=0.05$ s的认证网格下，\texttt{intlinprog}以最优性间隙0结束，选择的正是当前五架无人机正式航线。离散目标值为28.700 s，高密度严格复算为28.580 s。二者的0.120 s差异来自0--1网格端点累计。该结果证明当前方案是\textbf{候选库与认证离散精度下}的全局最优组合，不构成原连续40维模型的全局最优证明。
+在 $\Delta t=0.05$ s的认证网格下，使用MATLAB的\texttt{intlinprog}求解\cite{matlab}，最优性间隙为0，选择的正是当前五架无人机正式航线。离散目标值为28.700 s，高密度严格复算为28.580 s。二者的0.120 s差异来自0--1网格端点累计。该结果证明当前方案是\textbf{候选库与认证离散精度下}的全局最优组合，不构成原连续40维模型的全局最优证明。
+
+\section{结果分析与讨论}
+
+\subsection{五问结果的递进比较}
+
+表\ref{tab:progress}汇总五个问题的资源规模与严格遮蔽结果。问题1到问题2只增加四个连续决策自由度，遮蔽时间由1.390 s增至4.580 s，表明给定策略与最佳视线交会位置仍有较大差距。问题3增加投弹资源后提升至6.410 s，但受单一航迹和1 s投弹间隔限制，新增烟幕弹的边际收益递减。问题4保持三枚弹不变而改用三架无人机，结果达到11.170 s，说明平台初始位置与航向自由度是扩大遮蔽时间窗的重要因素。问题5同时面向三枚导弹，总时长达到28.580 s，平均每枚导弹获得9.527 s的完整遮蔽。
+
+\begin{table}[H]
+\centering
+\caption{五个问题的资源规模与结果比较}
+\label{tab:progress}
+\begin{tabular}{ccccc}
+\toprule
+问题 & 无人机数 & 使用烟幕弹数 & 干扰目标 & 累计遮蔽时间/s\\
+\midrule
+1 & 1 & 1 & M1 & 1.390\\
+2 & 1 & 1 & M1 & 4.580\\
+3 & 1 & 3 & M1 & 6.410\\
+4 & 3 & 3 & M1 & 11.170\\
+5 & 5 & 9 & M1--M3 & 28.580\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+上述比较还说明，烟幕弹数量不是决定效果的唯一因素。问题3的第三枚弹在总时长最优解中边际贡献为零，而问题4的三枚弹均产生正贡献；差异来自云团能否在空间和时间上覆盖不同的视线缺口。因此，策略设计应优先保证航迹与视线的几何匹配，再讨论投弹数量。若先固定航线后平均安排投弹时刻，容易产生多个云团重复覆盖同一时段，造成资源浪费。
+
+\subsection{问题5的时空协同机理}
+
+问题5的九枚有效烟幕弹形成“前段快速遮蔽、中段多方向接力、后段补充空缺”的时序结构。FY1在任务开始后的1 s内连续投放两枚弹，主要覆盖 M1 的早期接近阶段；FY2和FY4在中段从不同方向靠近 M2 视线，形成约12.76--22.79 s的主要遮蔽区间；FY3和FY5则利用较晚的起爆时刻补充 M2、M3 后段区间。由于三枚导弹初始位置和到达时间不同，最优方案没有强行采用统一投弹节奏，而是让各无人机根据视线移动速度和剩余飞行时间分工。
+
+从航线参数看，FY1与FY3分别接近速度上限和中等速度，FY4达到140 m/s上界，FY2速度相对较低。速度取值差异并不意味着低速平台利用不足：较低速度可以延迟到达特定视线位置，使起爆时刻与导弹经过目标方向的时间窗相匹配。类似地，引信延迟从0到12 s均有出现，说明起爆点不是由投放点邻域简单决定，而是由无人机水平运动、烟幕弹自由落体和导弹视线变化共同决定。
+
+三枚导弹的遮蔽时长并不完全均衡，M3的6.120 s低于M1和M2。原因一是 M3 的初始距离较短，可利用的飞行时间窗更窄；原因二是总时长优先的目标会把资源分配给单位投弹边际收益更高的 M1、M2。若任务要求三枚导弹获得相近保护，可改用最大化 $\min_jT_j$ 或在 $T_j$ 上设置最低保障约束，但这将形成与当前题意不同的优化目标，并可能降低总遮蔽时间。
+
+\subsection{全局最优性结论的适用边界}
+
+差分进化、坐标搜索和增量投弹共同给出一个高质量连续可行解，但这些启发式步骤本身不能证明40维混合连续模型的全局最优。本文的严格结论来自后续候选集整数规划：在20套完整航线候选、0.05 s时间网格和既定目标采样下，分支定界返回0最优性间隙，故不存在更优的候选组合。该结论对“候选集中的组合选择”是全局性的，对“所有可能航向、速度和时序”则不是全局性的。
+
+这一表述比直接宣称连续原问题全局最优更为严谨。高密度复算保持28.580 s，说明当前方案对数值离散具有稳定性；多随机种子搜索和局部修正多次回到相近结果，则提供经验上的近优证据。若需要连续意义下的严格证明，还需对航向、速度和时序变量构造区间上界，并使用空间分支定界逐盒排除，但计算量将远高于本题规模下的候选集认证。
 
 \section{模型检验与敏感性分析}
 
@@ -459,11 +731,43 @@ M1在约 $1.00\sim7.40$ s和 $21.85\sim25.39$ s受到遮蔽；M2在约 $12.76\si
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.72\textwidth]{figures/convergence.png}
-\caption{粗、精网格下的遮蔽时间比较}
+\caption{粗、精网格遮蔽时间的绝对差异}
 \label{fig:conv}
 \end{figure}
 
-问题5高密度结果为 $(9.960,12.490,6.130)$ s，总时长仍为28.580 s。各问随网格加密趋于稳定，正式结果保留三位小数具有合理精度。
+问题5高密度结果为 $(9.960,12.490,6.130)$ s，总时长仍为28.580 s。图\ref{fig:conv}直接绘制粗、精网格的绝对差，避免两组总时长曲线因尺度接近而相互遮盖。问题4的11.150 s是固定策略在最密时间与空间网格组合下的复算值，11.170 s是正式评价网格下的提交值，二者相差0.020 s；表\ref{tab:conv}中的0.050 s比较的是预设粗、精两端网格，口径不同。各问随网格加密趋于稳定，正式结果保留三位小数具有合理精度。
+
+\subsection{执行误差敏感性分析}
+
+为区分数值收敛与实际执行稳健性，对问题5进行100次随机扰动。为控制重复计算量，该实验采用圆周24点、高度5层及0.04 s时间步长，对应未扰动基准值28.520 s。每架无人机航向误差取 $[-0.2^\circ,0.2^\circ]$，速度相对误差取 $[-1\%,1\%]$并截断到允许范围；同一无人机的投放时刻整体偏移取 $[-0.05,0.05]$ s，引信延迟误差取 $[-0.05,0.05]$ s。整体平移投放时刻可保持同机投弹间隔不变。结果见表\ref{tab:sensitivity}。
+
+\begin{table}[H]
+\centering
+\caption{问题5执行误差敏感性分析结果}
+\label{tab:sensitivity}
+\begin{tabular}{lrrrr}
+\toprule
+统计量 & M1/s & M2/s & M3/s & 总计/s\\
+\midrule
+基准值 & 9.960 & 12.480 & 6.080 & 28.520\\
+扰动均值 & 8.632 & 7.923 & 3.340 & 19.895\\
+标准差 & 1.404 & 2.057 & 1.573 & 3.249\\
+最小值 & 6.320 & 1.320 & 0.000 & 9.760\\
+最大值 & 10.000 & 12.960 & 5.960 & 27.160\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+离散网格加密时总时长保持稳定，但小幅执行误差会显著降低严格完整遮蔽时长，尤其M2和M3较为敏感。原因是完整目标判据要求所有可见采样点同时被覆盖，烟幕球靠近可见轮廓边界时会产生明显的0--1跳变。因此，当前方案适合作为理想条件下的性能上界和投放基准；实际部署应将期望时长、最坏情形时长或扰动成功率纳入优化目标，而不能仅追求名义参数下的最大值。
+
+图\ref{fig:senshist}进一步给出100次扰动样本的总时长分布。样本明显集中在名义基准值左侧，说明性能下降不是由个别极端样本造成，而是航向和时序误差共同作用下的系统性结果。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.70\textwidth]{figures/sensitivity_hist.png}
+\caption{问题5执行误差扰动下的总遮蔽时间分布}
+\label{fig:senshist}
+\end{figure}
 
 \subsection{边际贡献检验}
 
@@ -475,43 +779,39 @@ M1在约 $1.00\sim7.40$ s和 $21.85\sim25.39$ s受到遮蔽；M2在约 $12.76\si
 
 \section{模型评价与改进方向}
 
-\subsection{模型优点}
+\subsection{几何真实性与计算代价}
 
-\begin{enumerate}[label=\arabic*)]
-\item 运动学关系显式，投放点、起爆点和云团轨迹均可直接复核；
-\item 完整圆柱目标判据利用了题目给出的尺寸信息，并允许多云团覆盖不同可见区域；
-\item 连续代理与严格验收分离，兼顾搜索效率和结果含义；
-\item 问题5采用分层优化，能够利用遮蔽空缺增量配置剩余投弹资源；
-\item 通过高密度复算、边际贡献和整数规划形成多层验证链。
-\end{enumerate}
+运动学关系均采用显式表达式，投放点、起爆点和云团轨迹能够由原始决策变量直接复核。完整圆柱判据利用了真目标的尺寸和可见表面信息，并允许不同云团覆盖不同目标点，较中心视线判定更严格。相应代价是每个时刻都要遍历导弹、云团和表面采样点，计算量随时间和空间网格加密迅速增加。现有模型还忽略风场、空气阻力和云团扩散，实际烟幕可能出现水平漂移和形变。后续可在不改变几何框架的基础上，将球形云团替换为随时间变化的椭球或随机集合。
 
-\subsection{模型不足}
+\subsection{搜索效率与最优性边界}
 
-\begin{enumerate}[label=\arabic*)]
-\item 未考虑风场、空气阻力和烟幕扩散，实际云团可能产生水平漂移和形变；
-\item 严格遮蔽仍依赖时间与空间离散，区间端点存在有限网格误差；
-\item 差分进化和分块局部搜索不能证明原连续模型全局最优；
-\item MILP仅在有限候选库中给出零间隙证明，候选库之外仍可能存在更优航线；
-\item 问题3第三枚弹未产生边际增益，仍可通过更强的事件驱动搜索继续考察。
-\end{enumerate}
+连续代理先将候选引入有效视线附近，严格模型再负责验收，避免差分进化长期停留在零值平台；问题5的缺口驱动增量搜索则把计算资源集中于尚未遮蔽的时间段。高密度复算、边际贡献和整数规划构成了由可行性到组合最优性的验证链。不过，差分进化与坐标搜索仍属于启发式方法，MILP的零间隙结论也只适用于20套候选航线和给定离散网格。扩大候选库、增加独立随机种子并构造连续变量的区间上界，可进一步缩小当前解与原连续模型全局最优值之间的不确定范围。
 
-\subsection{改进方向}
+\subsection{名义性能与执行稳健性}
 
-可进一步引入风速随机扰动和鲁棒优化，以最坏情形或期望遮蔽时间为目标；采用二分法精确定位遮蔽区间端点，降低固定时间步长误差；扩充不同随机种子、跨目标投弹序列和事件驱动航线候选，再用整数规划认证更大候选库；若计算资源允许，可构造区间放松上界，给出连续全局最优值的误差区间。
+名义参数下问题5达到28.580 s，且时间和空间网格加密没有改变总时长；但执行误差模拟均值下降到19.895 s，说明几何边界附近的高性能方案不一定具有良好容错性。实际应用中可将期望遮蔽时间、低分位数时长或最坏情形时长作为目标，并显式加入航向、速度和时序误差。对于问题2的零延迟边界解和问题3的零边际第三枚弹，也应结合实际引信能力与资源利用要求给出备选策略，而不能只依据名义总时长作出部署选择。
 
 \section{结论}
 
-本文建立了烟幕干扰弹投放问题的统一运动学和完整目标几何遮蔽模型，并针对五个问题设计由解析计算、差分进化、联合局部优化、增量投弹、冗余删除及0--1整数规划组成的分层求解方法。五问严格遮蔽时长依次为1.390 s、4.580 s、6.410 s、11.170 s以及问题5总计28.580 s。问题5最终使用9枚烟幕弹，三枚导弹均获得有效且可不连续的遮蔽区间。高密度复算、边际贡献和候选集整数规划结果共同说明方案满足题目约束、数值稳定，并在当前候选库和离散精度下达到全局最优组合。
+本文以导弹、无人机、烟幕弹和云团的统一运动关系为基础，构造了面向圆柱可见表面的严格联合遮蔽判据。连续接近度代理解决了严格目标的大面积零值问题，缺口驱动增量投弹与冗余删除则用于控制多平台方案规模。
+
+问题1的严格遮蔽时长为1.390 s；单机单弹优化将其提高到4.580 s；单机三弹和三机单弹方案分别达到6.410 s和11.170 s。问题5最终保留9枚具有正边际贡献的烟幕弹，对M1、M2、M3分别遮蔽9.960 s、12.500 s和6.120 s，总时长为28.580 s。结果显示，多平台从不同方向接近导弹视线，比沿固定航迹简单增加投弹数量更能延长联合遮蔽时间。
+
+全部方案均通过速度、投弹间隔和起爆高度检查。高密度复算保持问题5总时长不变，候选集整数规划在0.05 s网格下返回零最优性间隙，因此当前方案在候选库和给定离散精度内达到全局最优组合。执行扰动试验同时揭示了名义性能与稳健性之间的差异：若用于实际部署，还需围绕航向和时序误差重新优化，而不能直接将名义最优参数作为唯一方案。
 
 \begin{thebibliography}{99}
+\footnotesize
+\setlength{\itemsep}{0pt}
 \bibitem{de} Storn R, Price K. Differential evolution -- A simple and efficient heuristic for global optimization over continuous spaces[J]. Journal of Global Optimization, 1997, 11(4): 341--359.
-\bibitem{boyd} Boyd S, Vandenberghe L. Convex Optimization[M]. Cambridge: Cambridge University Press, 2004.
-\bibitem{taha} Taha H A. Operations Research: An Introduction[M]. 10th ed. Pearson, 2017.
 \bibitem{geom} de Berg M, Cheong O, van Kreveld M, Overmars M. Computational Geometry: Algorithms and Applications[M]. 3rd ed. Springer, 2008.
-\bibitem{matlab} MathWorks. MATLAB Optimization Toolbox User's Guide[EB/OL]. Natick: The MathWorks, Inc., 2025.
+\bibitem{numerical} Burden R L, Faires J D. Numerical Analysis[M]. 9th ed. Brooks/Cole, 2011.
+\bibitem{taha} Taha H A. Operations Research: An Introduction[M]. 10th ed. Pearson, 2017.
+\bibitem{matlab} MathWorks. Optimization Toolbox Documentation: intlinprog[EB/OL]. \url{https://www.mathworks.com/help/optim/ug/intlinprog.html}, 2026-08-30.
 \end{thebibliography}
+\normalsize
 
 \appendix
+\titleformat{\section}{\centering\heiti\zihao{3}}{附录\Alph{section}}{0.8em}{}
 \section{主要算法伪代码}
 
 \subsection{完整目标遮蔽判定}
@@ -566,25 +866,80 @@ subject to
     x, y are binary
 \end{lstlisting}
 
+\section{完整MATLAB源程序}
+
+以下程序与支撑材料中的源文件保持一致，可由\texttt{run\_all.m}顺序复现五问结果、验证数据、敏感性分析、整数规划认证和论文图像。
+
+\lstinputlisting[caption={一键运行程序run\_all.m}]{../code/run_all.m}
+\lstinputlisting[caption={题目数据data\_a.m}]{../code/data_a.m}
+\lstinputlisting[caption={烟幕弹轨迹make\_clouds.m}]{../code/make_clouds.m}
+\lstinputlisting[caption={严格遮蔽时间coverage\_time.m}]{../code/coverage_time.m}
+\lstinputlisting[caption={连续代理目标coverage\_score.m}]{../code/coverage_score.m}
+\lstinputlisting[caption={遮蔽区间coverage\_intervals.m}]{../code/coverage_intervals.m}
+\lstinputlisting[caption={差分进化de\_search.m}]{../code/de_search.m}
+\lstinputlisting[caption={坐标局部搜索local\_search.m}]{../code/local_search.m}
+\lstinputlisting[caption={新增烟幕弹搜索add\_bombs.m}]{../code/add_bombs.m}
+\lstinputlisting[caption={候选点级遮蔽plan\_point\_cover.m}]{../code/plan_point_cover.m}
+\lstinputlisting[caption={问题1求解solve\_problem1.m}]{../code/solve_problem1.m}
+\lstinputlisting[caption={问题2求解solve\_problem2.m}]{../code/solve_problem2.m}
+\lstinputlisting[caption={问题3求解solve\_problem3.m}]{../code/solve_problem3.m}
+\lstinputlisting[caption={问题4求解solve\_problem4.m}]{../code/solve_problem4.m}
+\lstinputlisting[caption={问题5求解solve\_problem5.m}]{../code/solve_problem5.m}
+\lstinputlisting[caption={问题5整数规划认证solve\_problem5\_milp.m}]{../code/solve_problem5_milp.m}
+\lstinputlisting[caption={结果约束验证validate\_results.m}]{../code/validate_results.m}
+\lstinputlisting[caption={离散收敛检验convergence\_check.m}]{../code/convergence_check.m}
+\lstinputlisting[caption={执行误差分析sensitivity\_check.m}]{../code/sensitivity_check.m}
+\lstinputlisting[caption={结果表导出export\_results.m}]{../code/export_results.m}
+\lstinputlisting[basicstyle=\scriptsize\ttfamily,caption={论文图像生成make\_figures.m}]{make_figures.m}
+
 \section{支撑文件说明}
 
-\begin{table}[H]
-\centering
-\begin{tabularx}{0.95\textwidth}{lX}
+\scriptsize
+\renewcommand{\arraystretch}{0.76}
+\setlength{\LTpre}{0pt}
+\setlength{\LTpost}{0pt}
+\begin{longtable}{p{0.39\textwidth}p{0.52\textwidth}}
+\caption{支撑材料文件列表}\label{tab:support}\\
 \toprule
 文件 & 功能\\
 \midrule
-\texttt{run\_all.m} & 顺序运行五问并导出三个结果表\\
-\texttt{coverage\_time.m} & 完整目标严格遮蔽时间及0--1轨迹\\
-\texttt{coverage\_score.m} & 连续接近度代理目标\\
-\texttt{solve\_problem1.m--solve\_problem5.m} & 五个问题的求解程序\\
-\texttt{add\_bombs.m} & 空缺导向的新增烟幕弹搜索\\
-\texttt{validate\_results.m} & 约束、高密度时长和边际贡献验证\\
-\texttt{convergence\_check.m} & 时间和空间离散收敛检验\\
-\texttt{solve\_problem5\_milp.m} & 候选集0--1整数规划认证\\
-\texttt{result1.xlsx--result3.xlsx} & 按题目模板填写的最终投放策略\\
+\endfirsthead
+\toprule
+文件 & 功能\\
+\midrule
+\endhead
+\texttt{code/run\_all.m} & 顺序执行求解、验证、敏感性分析、MILP认证和制图\\
+\texttt{code/data\_a.m} & 题目数据与圆柱目标采样\\
+\texttt{code/make\_clouds.m} & 投放点、起爆点、有效期及约束检查\\
+\texttt{code/coverage\_time.m} & 完整目标严格遮蔽时长\\
+\texttt{code/coverage\_score.m} & 连续接近度代理目标\\
+\texttt{code/coverage\_intervals.m} & 遮蔽区间端点提取\\
+\texttt{code/de\_search.m} & 差分进化搜索\\
+\texttt{code/local\_search.m} & 坐标局部修正\\
+\texttt{code/add\_bombs.m} & 空缺导向的新增烟幕弹搜索\\
+\texttt{code/plan\_point\_cover.m} & MILP候选点级遮蔽矩阵\\
+\texttt{code/solve\_problem1.m} & 问题1求解\\
+\texttt{code/solve\_problem2.m} & 问题2求解\\
+\texttt{code/solve\_problem3.m} & 问题3求解\\
+\texttt{code/solve\_problem4.m} & 问题4求解\\
+\texttt{code/solve\_problem5.m} & 问题5分层优化\\
+\texttt{code/solve\_problem5\_milp.m} & 候选集0--1整数规划认证\\
+\texttt{code/validate\_results.m} & 约束、高密度时长和边际贡献验证\\
+\texttt{code/convergence\_check.m} & 时间与空间离散收敛检验\\
+\texttt{code/sensitivity\_check.m} & 执行误差随机模拟\\
+\texttt{code/export\_results.m} & 三个Excel结果表导出\\
+\texttt{paper/make\_figures.m} & 论文轨迹、区间、贡献和收敛图生成\\
+\texttt{result/problem1.mat} 至 \texttt{problem5.mat} & 五问完整计算结果\\
+\texttt{result/problem5\_milp.mat} & 整数规划选择及最优性信息\\
+\texttt{result/validation.mat} & 高密度约束验证结果\\
+\texttt{result/convergence.mat} & 离散精度收敛结果\\
+\texttt{result/sensitivity.mat} & 100次扰动样本及统计量\\
+\texttt{result/result1.xlsx} 至 \texttt{result3.xlsx} & 按赛题模板填写的最终策略\\
+\texttt{paper/figures/*.png} & 轨迹、区间、贡献及收敛图像\\
+\texttt{paper/烟幕干扰弹投放策略.tex} & 论文LaTeX源文件\\
 \bottomrule
-\end{tabularx}
-\end{table}
+\end{longtable}
+\renewcommand{\arraystretch}{1}
+\normalsize
 
 \end{document}

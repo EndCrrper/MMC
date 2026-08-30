@@ -4,7 +4,22 @@ C.drop = nan(n,3);
 C.burst = nan(n,3);
 C.tb = nan(n,1);
 C.te = nan(n,1);
-C.ok = true;
+C.ok = size(routes,2) >= 2 && size(bombs,2) == 3;
+
+if ~C.ok || isempty(bombs), return; end
+kall = bombs(:,1);
+C.ok = all(isfinite(bombs),'all') && all(kall == round(kall)) ...
+    && all(kall >= 1 & kall <= size(routes,1));
+if ~C.ok, return; end
+
+used = unique(kall)';
+for k = used
+    th = routes(k,1); v = routes(k,2);
+    td = sort(bombs(kall==k,2));
+    C.ok = C.ok && all(isfinite([th v])) && th >= 0 && th <= 360 ...
+        && (numel(td) < 2 || all(diff(td) >= 1-1e-9));
+end
+if ~C.ok, return; end
 
 for i = 1:n
     k = bombs(i,1);

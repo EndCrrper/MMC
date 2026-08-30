@@ -18,9 +18,9 @@ x = x_total;
 if t3>t1 || (t3>=t1-.05 && min(s3)>min(s1)), x=x_wide; t1=t3; s1=s3; end
 if t2>=t1-.05 && min(s2)>min(s1), x=x_even; end
 
-[routes,bombs,C,t_full,single_time,t_center] = assess(x,D);
+[routes,bombs,C,t_full,single_time,t_center,marginal_time] = assess(x,D);
 save(fullfile(out,'problem3.mat'),'x','x_total','x_even','x_wide','routes','bombs', ...
-    'C','t_center','t_full','single_time');
+    'C','t_center','t_full','single_time','marginal_time');
 fprintf('P3: %.3f s, full %.3f s\n',t_center,t_full);
 
 function x = search_plan(even,lb,ub,D,seeds)
@@ -56,13 +56,17 @@ if ~C.ok || any(C.tb>D.T(1)), y=1e4; return; end
 y=-coverage_time(r,b,1,D,.04,full);
 end
 
-function [r,b,C,tf,one,tc] = assess(x,D)
+function [r,b,C,tf,one,tc,gain] = assess(x,D)
 [r,b] = decode(x);
 C = make_clouds(r,b,D);
 tc = coverage_time(r,b,1,D,.005,false);
 tf = coverage_time(r,b,1,D,.01,true);
-one=zeros(3,1);
-for i=1:3, one(i)=coverage_time(r,b(i,:),1,D,.01,true); end
+one=zeros(3,1); gain=zeros(3,1);
+for i=1:3
+    one(i)=coverage_time(r,b(i,:),1,D,.01,true);
+    keep=true(3,1); keep(i)=false;
+    gain(i)=tf-coverage_time(r,b(keep,:),1,D,.01,true);
+end
 end
 
 function [r,b] = decode(x)
